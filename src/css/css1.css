@@ -1,0 +1,369 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+global {
+	fontFamily:"Microsoft YaHei,微软雅黑";
+}
+/* ******************************    pk10           ******************************************** */
+s|Label.label_16
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#ffffff;
+	fontSize:14;
+	textAlign:center;
+}
+mx|Label.label_22
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#ffffff;
+	fontSize:22;
+	textAlign:center;
+	fontWeight:bold;
+}
+s|Label.label_12
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#c55662;
+	fontSize:14;
+	textAlign:center;
+}
+mx|Label.label_14
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#ffffff;
+	fontSize:14;
+	textAlign:center;
+}
+
+
+s|Label.dataAnalysis_label_time_iusse
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#a1cc4a;
+	fontSize:16;
+	fontWeight:bold;
+	fontStyle:normal;
+	fontStyle:italic;
+}
+mx|Label.dataAnalysis_label_time_iusse
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#a1cc4a;
+	fontSize:16;
+	fontWeight:bold;
+	fontStyle:normal;
+	fontStyle:italic;
+}
+s|Label.dataAnalysis_label_time_iusse_info
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#a1cc4a;
+	fontSize:16;
+	fontWeight:bold;
+	fontStyle:normal;
+	fontStyle:italic;
+}
+mx|Label.dataAnalysis_label_time_iusse_info
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#a1cc4a;
+	fontSize:16;
+	fontWeight:bold;
+	fontStyle:normal;
+	fontStyle:italic;
+}
+s|Label.moveCar_time_issue
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#808080;
+	fontSize:18;
+	fontWeight:bold;
+	fontStyle:italic;
+}
+s|Label.moveCar_he_daxiao_danshuang
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#c1272d;
+	fontSize:18;
+	fontWeight:bold;
+	fontStyle:italic;
+	textAlign:center;
+}
+mx|Label.moveCar_he_daxiao_danshuang
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#c1272d;
+	fontSize:18;
+	fontWeight:bold;
+	fontStyle:italic;
+	textAlign:center;
+}
+
+mx|Label.NowLottery_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#a1cc4a;
+	fontSize:22;
+	fontWeight:bold;
+	fontStyle:normal;
+	fontStyle:italic;
+}
+
+/* ******************************    pk10_A           ******************************************** */
+s|Label.pk10_A_labelStyle_1
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#ffffff;
+	fontSize:14;
+}
+mx|Label.pk10_A_labelStyle_1
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#ffffff;
+	fontSize:14;
+}
+
+mx|Label.pk10_A_labelStyle_lastresult
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#ffffff;
+	fontSize:15;
+	textAlign:center;
+	fontStyle:italic;
+	fontWeight:bold;
+}
+s|Label.pk10_A_labelStyle_2
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#ffffff;
+	fontSize:12;
+}
+
+
+
+/* ******************************    重庆时时彩            ******************************************** */
+
+mx|Label.name_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:16;
+	textAlign:center;
+}
+mx|Label.iusse_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:14;
+	textAlign:center;
+}
+s|Label.timeComponent_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#db5d5e;
+	fontSize:30;
+	textAlign:center;
+	fontWeight:bold;
+}
+mx|Label.timeComponentInfo_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#db5d5e;
+	fontSize:28;
+	textAlign:center;
+	fontWeight:bold;
+}
+mx|Label.timeComponentNew_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#23bf52;
+	fontSize:16;
+	textAlign:right;
+	fontWeight:bold;
+}
+s|Label.timeComponentNew_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#23bf52;
+	fontSize:16;
+	textAlign:right;
+	fontWeight:bold;
+}
+/* ******************************    新疆时时彩            ******************************************** */
+mx|Label.xjssc_timeComponentNew_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:16;
+	textAlign:right;
+	fontWeight:bold;
+}
+mx|Label.xjssc_iusse_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	fontWeight:bold;
+	color:#333;
+	fontSize:18;
+	textAlign:center;
+}
+mx|Label.xjssc_time_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:18;
+	textAlign:right;
+}
+mx|Label.xjssc_nextIusse_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:18;
+	textAlign:left;
+}
+
+/* ******************************    江苏快3          ******************************************** */
+mx|Label.jsk3_iusse_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#fff;
+	fontSize:18;
+	textAlign:center;
+}
+mx|Label.jsk3_timeComponentNew_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:30;
+	textAlign:center;
+	fontWeight:bold;
+}
+mx|Label.jsk3_timeComponentNew_style_1
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:20;
+	textAlign:center;
+	fontWeight:bold;
+}
+mx|Label.jsk3_time_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:18;
+	textAlign:right;
+}
+mx|Label.jsk3_nextIusse_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:18;
+	textAlign:left;
+}
+mx|Label.jsk3_hezhidaxiaodanshuang_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:18;
+	textAlign:center;
+}
+mx|Label.now_kaijiang_info_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:18;
+	textAlign:center;
+}
+/* ******************************    上海时时乐          ******************************************** */
+mx|Label.shssl_iusse_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#000;
+	fontSize:18;
+	textAlign:center;
+	fontWeight:bold;
+}
+mx|Label.shssl_timeComponentNew_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:20;
+	textAlign:center;
+	fontWeight:bold;
+}
+mx|Label.shssl_timeComponentNew_style_1
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:20;
+	textAlign:center;
+	fontWeight:bold;
+}
+mx|Label.shssl_time_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#000000;
+	fontSize:16;
+	textAlign:left;
+}
+mx|Label.shssl_nextIusse_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#000000;
+	fontSize:16;
+	textAlign:left;
+}
+mx|Label.shssl_lastIusse_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#106a3f;
+	fontSize:18;
+	textAlign:center;
+	fontWeight:bold;
+}
+
+/* ******************************    天津时时彩          ******************************************** */
+mx|Label.tjssc_iusse_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#333;
+	fontSize:18;
+	textAlign:center;
+	fontWeight:bold;
+}
+mx|Label.tjssc_time_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:18;
+	textAlign:right;
+}
+mx|Label.tjssc_nextIusse_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#FFFFFF;
+	fontSize:18;
+	textAlign:left;
+}
+mx|Label.tjssc_timeComponentNew_style
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#c0bfbd;
+	fontSize:24;
+	textAlign:center;
+	fontWeight:bold;
+}
+mx|Label.tjssc_timeComponentNew_style_1
+{
+	fontFamily:"Microsoft YaHei,微软雅黑";
+	color:#c0bfbd;
+	fontSize:28;
+	textAlign:center;
+	fontWeight:bold;
+}
+
+
+
+
+
+

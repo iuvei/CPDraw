@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 width="448" height="201"
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/jsk3/float_view.png")]
+			private var float_view_bg:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/3.png")]
+			private var img_3:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/4.png")]
+			private var img_4:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/5.png")]
+			private var img_5:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/6.png")]
+			private var img_6:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/7.png")]
+			private var img_7:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/8.png")]
+			private var img_8:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/9.png")]
+			private var img_9:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/10.png")]
+			private var img_10:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/11.png")]
+			private var img_11:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/12.png")]
+			private var img_12:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/13.png")]
+			private var img_13:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/14.png")]
+			private var img_14:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/15.png")]
+			private var img_15:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/16.png")]
+			private var img_16:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/17.png")]
+			private var img_17:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/18.png")]
+			private var img_18:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/big.png")]
+			private var big:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/samll.png")]
+			private var samll:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/single.png")]
+			private var single:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/he/double.png")]
+			private var double:Class;
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			//初始化；
+			var index:int;
+			public function init(arr:Array):void
+			{
+				index = int(arr[0]) + int(arr[1]) + int(arr[2]);
+				
+				pic_1.source = this["img_" + index];
+				pic_2.source = index>10?big:samll;
+				pic_3.source = index%2==1?single:double;
+			}
+			
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<s:Image source="{float_view_bg}" />
+	
+	<s:HGroup x="86" y="34" height="30" gap="0" verticalAlign="middle">
+		<mx:Label text="和值" width="92" styleName="jsk3_hezhidaxiaodanshuang_style"/>
+		<mx:Label text="大小" width="92" styleName="jsk3_hezhidaxiaodanshuang_style"/>
+		<mx:Label text="单双" width="92" styleName="jsk3_hezhidaxiaodanshuang_style"/>
+	</s:HGroup>
+	
+	<s:HGroup x="86" y="78" height="70" gap="0" verticalAlign="middle">
+		<s:HGroup width="92" height="70" horizontalAlign="center" verticalAlign="middle">
+			<s:Image source="{img_6}" id="pic_1"/>
+		</s:HGroup>
+		<s:HGroup width="92" height="70" horizontalAlign="center" verticalAlign="middle">
+			<s:Image source="{samll}" id="pic_2"/>
+		</s:HGroup>
+		<s:HGroup width="92" height="70" horizontalAlign="center" verticalAlign="middle">
+			<s:Image source="{double}" id="pic_3"/>
+		</s:HGroup>
+	</s:HGroup>
+	
+</s:Group>

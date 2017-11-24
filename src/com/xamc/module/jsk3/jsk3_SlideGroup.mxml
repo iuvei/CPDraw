@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.single.PublicDataClass;
+			
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/jsk3/numbers/1.png")]
+			private var img_1:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/numbers/2.png")]
+			private var img_2:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/numbers/3.png")]
+			private var img_3:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/numbers/4.png")]
+			private var img_4:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/numbers/5.png")]
+			private var img_5:Class;
+			[Bindable]
+			[Embed(source="css/img/jsk3/numbers/6.png")]
+			private var img_6:Class;
+			
+			private var _isDispatch:Boolean = true;
+			
+			private var _result:Array;
+			
+			[Bindable]
+			public function get isDispatch():Boolean
+			{
+				return _isDispatch;
+			}
+
+			public function set isDispatch(value:Boolean):void
+			{
+				_isDispatch = value;
+			}
+
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			//初始化；
+			public function init(result:Array):void
+			{
+				_result = new Array();
+				_result = result;
+				
+				n_1 = 0;
+				n_2 = 0;
+				n_3 = 0;
+				//初始资源；
+				pic_1.source = img_1;
+				pic_2.source = img_2;
+				pic_3.source = img_3;
+				//启动滚动；
+				effect_1.play();
+				effect_2.play();
+				effect_3.play();
+			}
+			
+			var n_1:int;
+			protected function fade1_effectEndHandler(event:EffectEvent):void
+			{
+				n_1++;
+				if( n_1 < 40)
+				{
+					pic_1.source = this["img_" + (n_1%6+1)  ];
+					effect_1.play();
+				}else{
+					pic_1.source = this["img_" + _result[0]  ];
+				}
+			}
+			var n_2:int;
+			protected function fade2_effectEndHandler(event:EffectEvent):void
+			{
+				n_2++;
+				if( n_2 < 80)
+				{
+					pic_2.source = this["img_" + (n_2%6+1)  ];
+					effect_2.play();
+				}else{
+					pic_2.source = this["img_" + _result[1]  ];
+				}
+			}
+			var n_3:int;
+			protected function fade3_effectEndHandler(event:EffectEvent):void
+			{
+				n_3++;
+				if( n_3 < 120)
+				{
+					pic_3.source = this["img_" + (n_3%6+1)  ];
+					effect_3.play();
+				}else{
+					pic_3.source = this["img_" + _result[2]  ];
+					
+					if(isDispatch)
+					{
+						dispatchEvent(new Event("EffectCompleteEvent",true));
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<s:Fade duration="50" effectEnd="fade1_effectEndHandler(event)" id="effect_1"  target="{pic_1}"/>
+		<s:Fade duration="50" effectEnd="fade2_effectEndHandler(event)" id="effect_2"  target="{pic_2}"/>
+		<s:Fade duration="50" effectEnd="fade3_effectEndHandler(event)" id="effect_3"  target="{pic_3}"/>
+	</fx:Declarations>
+	
+	<s:HGroup gap="10">
+		<s:HGroup width="82" height="82" horizontalAlign="center" verticalAlign="middle">
+			<s:Image source="{img_1}" id="pic_1"/>
+		</s:HGroup>
+		<s:HGroup width="82" height="82" horizontalAlign="center" verticalAlign="middle">
+			<s:Image source="{img_2}" id="pic_2" />
+		</s:HGroup>
+		<s:HGroup width="82" height="82" horizontalAlign="center" verticalAlign="middle">
+			<s:Image source="{img_3}" id="pic_3" />
+		</s:HGroup>
+	</s:HGroup>
+	
+</s:Group>

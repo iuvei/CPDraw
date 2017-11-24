@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 width="980" height="630"
+		 creationComplete="group1_creationCompleteHandler(event)" xmlns:shssl="com.xamc.module.shssl.*" xmlns:local="*">
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.service.ServerTool;
+			import com.xamc.service.ServerToolImpl;
+			import com.xamc.single.CurrentBusinessInfo;
+			import com.xamc.single.PublicDataClass;
+			
+			import flash.debugger.enterDebugger;
+			
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/shssl/shssl_bg.png")]
+			private var bg:Class;
+				
+			[Bindable]
+			[Embed(source="css/img/shssl/numbers/0.png")]
+			private var img_0:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/numbers/1.png")]
+			private var img_1:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/numbers/2.png")]
+			private var img_2:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/numbers/3.png")]
+			private var img_3:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/numbers/4.png")]
+			private var img_4:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/numbers/5.png")]
+			private var img_5:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/numbers/6.png")]
+			private var img_6:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/numbers/7.png")]
+			private var img_7:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/numbers/8.png")]
+			private var img_8:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/numbers/9.png")]
+			private var img_9:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/shssl/cloud1.png")]
+			private var cloud1:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/cloud2.png")]
+			private var cloud2:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/cloud3.png")]
+			private var cloud3:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/shssl/swf/shssl.swf")]
+			private var shssl_brid:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/swf/shssl_shuzhi.swf")]
+			private var shssl_shuzhi:Class;
+			[Bindable]
+			[Embed(source="css/img/shssl/swf/squirrel.swf")]
+			private var squirrel:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/shssl/target.png")]
+			private var target:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/shssl/Bullet_holes.png")]
+			private var Bullet_holes:Class;
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				timerComponentNew.addEventListener("CountdownCompleteEvent",CountdownCompleteEventHandler);
+				timerComponentNew.addEventListener("DonotAllowTryEvent",DonotAllowTryEventHandler);
+				//初始化页面；
+				init_view();
+				// 请求数据
+				PublicDataClass.RequestData_And_SaveData(init,15);
+			}
+			
+			private function init_view():void
+			{
+				try_btn.mouseChildren = false;
+				try_btn.enabled = false;
+				
+				//云朵移动事件；
+				addEventListener(Event.ENTER_FRAME,enterFrameHandler);
+				//小鸟飞翔；
+				fish_a_effect_in.play();
+				//上期开奖结果显示；
+				result_effect.play();
+				//上期开奖期号显示；
+				iusee_effect.play();
+				//倒计时划出；
+				wipe_effect.play();
+				//松鼠跑出；
+				squirrel_swf_effect.play();
+				//靶子出现；
+				target_1_effect.play();
+			}
+			
+			private function enterFrameHandler(event:Event):void
+			{
+				if(cloud_1.x > -980)
+				{
+					cloud_1.x = cloud_1.x -1;
+				}else{
+					cloud_1.x = 1960;
+				}
+				if(cloud_2.x > -980)
+				{
+					cloud_2.x = cloud_2.x -1;
+				}else{
+					cloud_2.x = 1960;
+				}
+				if(cloud_3.x > -980)
+				{
+					cloud_3.x = cloud_3.x -1;
+				}else{
+					cloud_3.x = 1960;
+				}
+			}
+			
+			protected function fish_a_effect_in_effectEndHandler(event:EffectEvent):void
+			{
+				fish_a_effect_out.play();
+			}
+			protected function fish_a_effect_out_effectEndHandler(event:EffectEvent):void
+			{
+				fish_a_effect_in.play();
+			}
+			
+			
+			// 请求数据  回调
+			private function init():void
+			{
+				//当前开奖号
+				last_result.text = PublicDataClass.base_lastResultInfo.drawResult;
+				//当前期号
+				lastIusse.text = "第"+ PublicDataClass.base_lastResultInfo.issueNumber +"期";
+				//下期开奖期号
+				nextIusse.text = "下期开奖：" + PublicDataClass.base_nowResultInfo.issueNumber;
+				//下期开奖时间
+				nextIussekaijiangTime.text = "开奖时间：" + ((PublicDataClass.base_nowResultInfo.endTime).toString()).split(' ')[1].toString().split('.')[0];
+				//倒计时；
+				timerComponentNew.init(PublicDataClass.base_nowResultInfo.residualTime);
+				
+				if(PublicDataClass.base_game_state)//0未开奖，1正在开奖
+				{
+					//开始开奖；
+					start();
+				}else{
+					//滚动区域，播放一次上期开奖结果；雷同试试手气；
+					nextResultArr = new Array();
+					nextResultArr = PublicDataClass.base_resultArr.slice();
+					//试试手气；初始化；
+					//try_main();
+				}
+			}
+			
+			//倒计时 走完， 开奖；
+			private function CountdownCompleteEventHandler(e:Event):void
+			{
+				//开始开奖；
+				start();
+			}
+			private function DonotAllowTryEventHandler(e:Event):void
+			{
+				try_btn.mouseChildren = false;
+				try_btn.enabled = false;
+			}
+			
+			//模拟开奖结果数组；
+			private var nextResultArr:Array;
+			private var HeartbeatTime:Timer ;
+			//开始开奖；
+			private function start():void
+			{
+				try_btn.mouseChildren = false;
+				try_btn.enabled = false;
+				
+				//心跳   定时取开奖结果；
+				HeartbeatTime = new Timer(3000);
+				HeartbeatTime.addEventListener(TimerEvent.TIMER,onTime);
+				HeartbeatTime.start();
+			}
+			private function onTime(e:TimerEvent):void
+			{
+				var server:ServerTool = new ServerToolImpl();
+				var params:Object = new Object();
+				params.dateString = "";
+				params.type = 2;
+				params.lotteryId = CurrentBusinessInfo.nowLottery;
+				server.getSHSSLshipinData(params,resultHandler,faultHandler);
+			}
+			private function faultHandler(e:FaultEvent):void
+			{
+				trace("请求服务器异常！！！");
+			}
+			private function resultHandler(e:ResultEvent):void
+			{
+				trace(e.result.toString());
+				var obj:Object = JSON.parse(e.result.toString());
+				if(  int(PublicDataClass.saveIssueNumber) < int(obj.nowResultIssus.issueNumber) ) //说明此时开奖结果已出；
+				{
+					//保存最新数据；
+					saveData(obj);
+					
+					//移除 心跳；
+					HeartbeatTime.removeEventListener(TimerEvent.TIMER,onTime);
+					HeartbeatTime.stop();
+					HeartbeatTime = null;
+					
+					nextResultArr = new Array();
+					nextResultArr = PublicDataClass.base_resultArr.slice();
+					
+					//手枪动画  显示；
+					gun_swf_in_effect.play();
+				}
+			}
+			//保存最新数据；
+			private function saveData(obj:Object):void
+			{
+				//当前状态 
+				PublicDataClass.base_game_state = obj.resultState;
+				//上一期开奖结果；
+				PublicDataClass.base_resultArr = obj.lastResultIssus.drawResult.split(","); 
+				//上一期开奖信息；
+				PublicDataClass.base_lastResultInfo = obj.lastResultIssus;
+				//当前期开奖信息；
+				PublicDataClass.base_nowResultInfo = obj.nowResultIssus;
+				//历史开奖结果  1~10  对应的最近50期   期号数组
+				PublicDataClass.base_historyDataIusseArr = obj.issuses.split(",");
+				//历史开奖结果  1~10  对应的最近50期历史数据——折线图/表格
+				PublicDataClass.base_historyDataArr = obj.statisticsDatas; 
+				//保存下一期的期号
+				PublicDataClass.saveIssueNumber = obj.nowResultIssus.issueNumber;
+			}
+			
+			
+			
+			//试试手气；
+			protected function trybtn1_clickHandler(event:MouseEvent):void
+			{
+				//随机一组数据；
+				nextResultArr = new Array();
+				var i:int;
+				while(nextResultArr.length<3)
+				{
+					i = Math.floor(Math.random() * 10);
+					if(nextResultArr.indexOf(i)==-1)nextResultArr.push(i);
+				}
+				//试试手气；初始化；
+				try_main();
+			}
+			
+			//试试手气；初始化；
+			private function try_main():void
+			{
+				try_btn.mouseChildren = false;
+				try_btn.enabled = false;
+				//初始化；
+				result_1.alpha = 0;
+				result_2.alpha = 0;
+				result_3.alpha = 0;
+				Bullet_1.visible = false;
+				Bullet_2.visible = false;
+				Bullet_3.visible = false;
+				//手枪动画  显示；
+				gun_swf_in_effect.play();
+			}
+			
+			protected function gun_swf_in_effectEndHandler(event:EffectEvent):void
+			{
+				result_1.source = this["img_" + nextResultArr[0]];
+				result_2.source = this["img_" + nextResultArr[1]];
+				result_3.source = this["img_" + nextResultArr[2]];
+				
+				//手枪动画；
+				gun_swf.gotoAndPlay(2);		
+				//弹孔出现；
+				Bullet_1.visible = true;
+				//显示数字结果；
+				result_1_effect.play();
+			}
+			
+			protected function target_1_effect_effectEndHandler(event:EffectEvent):void
+			{
+				target_2_effect.play();
+			}
+			
+			protected function target_2_effect_effectEndHandler(event:EffectEvent):void
+			{
+				target_3_effect.play();
+			}
+			
+			protected function target_3_effect_effectEndHandler(event:EffectEvent):void
+			{
+				gun_swf_effect.play();
+			}
+			
+			protected function gun_swf_effect_effectEndHandler(event:EffectEvent):void
+			{
+				result_1.source = this["img_" + PublicDataClass.base_resultArr[0]];
+				result_2.source = this["img_" + PublicDataClass.base_resultArr[1]];
+				result_3.source = this["img_" + PublicDataClass.base_resultArr[2]];
+				
+				//手枪动画；
+				gun_swf.gotoAndPlay(2);		
+				//弹孔出现；
+				Bullet_1.visible = true;
+				//显示数字结果；
+				result_1_effect.play();
+			}
+			
+			protected function result_1_effect_effectEndHandler(event:EffectEvent):void
+			{
+				//手枪动画；
+				gun_swf.gotoAndPlay(2);		
+				//弹孔出现；
+				Bullet_2.visible = true;
+				//显示数字结果；
+				result_2_effect.play();
+			}
+			protected function result_2_effect_effectEndHandler(event:EffectEvent):void
+			{
+				//手枪动画；
+				gun_swf.gotoAndPlay(2);		
+				//弹孔出现；
+				Bullet_3.visible = true;
+				//显示数字结果；
+				result_3_effect.play();
+			}
+			protected function result_3_effect_effectEndHandler(event:EffectEvent):void
+			{
+				//手枪消失动画；
+				gun_swf_out_effect.play();
+			}
+			
+			
+			protected function gun_swf_out_effect_effectEndHandler(event:EffectEvent):void
+			{
+				try_btn.mouseChildren = true;
+				try_btn.enabled = true;
+				
+				
+				//确保取到最新的倒计时时间
+				var server:ServerTool = new ServerToolImpl();
+				var params:Object = new Object();
+				params.dateString = "";
+				params.type = 2;
+				params.lotteryId = CurrentBusinessInfo.nowLottery;
+				server.getSHSSLshipinData(params,resultHandler,faultHandler);
+				function faultHandler(e:FaultEvent):void
+				{
+					trace("请求服务器异常！！！");
+				}
+				function resultHandler(e:ResultEvent):void
+				{
+					trace(e.result.toString());
+					var obj:Object = JSON.parse(e.result.toString());
+					//保存最新数据；
+					saveData(obj);
+					
+					//刷新页面；
+					//当前开奖号
+					last_result.text = PublicDataClass.base_lastResultInfo.drawResult;
+					//当前期号
+					lastIusse.text = "第"+ PublicDataClass.base_lastResultInfo.issueNumber +"期";
+					//下期开奖期号
+					nextIusse.text = "下期开奖：" + PublicDataClass.base_nowResultInfo.issueNumber;
+					//下期开奖时间
+					nextIussekaijiangTime.text = "开奖时间：" + ((PublicDataClass.base_nowResultInfo.endTime).toString()).split(' ')[1].toString().split('.')[0];
+					//倒计时；
+					timerComponentNew.init(PublicDataClass.base_nowResultInfo.residualTime);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		
+		<!--小鸟-->
+		<s:Sequence id="fish_a_effect_in" effectEnd="fish_a_effect_in_effectEndHandler(event)">
+			<s:Rotate3D duration="50" target="{fish_a}" angleYFrom="180" angleYTo="0" />
+			<s:Move duration="25000"  target="{fish_a}" xFrom="-200" xTo="1200" />
+		</s:Sequence>
+		<s:Sequence id="fish_a_effect_out" effectEnd="fish_a_effect_out_effectEndHandler(event)">
+			<s:Rotate3D duration="50" target="{fish_a}" angleYFrom="0" angleYTo="-180" />
+			<s:Move duration="25000"  target="{fish_a}" xFrom="1200" xTo="-200" />
+		</s:Sequence>
+		<!--上期结果-->
+		<s:Fade duration="1000" startDelay="3000" alphaFrom="0" alphaTo="1" target="{last_result_group}" id="result_effect"/>
+		<!--上期期号-->
+		<s:Fade duration="1000" startDelay="4000" alphaFrom="0" alphaTo="1" 
+				 target="{last_iusse_group}" id="iusee_effect" />
+		<!--倒计时-->
+		<s:Move duration="1000" startDelay="5000" yFrom="-213" yTo="-100" target="{timerComponentNew_group}" id="wipe_effect"/>
+		<!--松鼠-->
+		<s:Move duration="1000" startDelay="6000" xFrom="-200" xTo="-50" target="{squirrel_swf}" id="squirrel_swf_effect"/>
+		
+		
+		<!--靶子-->
+		<s:Move duration="500" yFrom="480" yTo="0" target="{target_1}" id="target_1_effect"  effectEnd="target_1_effect_effectEndHandler(event)"/>
+		<s:Move duration="500" yFrom="480" yTo="0" target="{target_2}" id="target_2_effect" effectEnd="target_2_effect_effectEndHandler(event)"/>
+		<s:Move duration="500" yFrom="480" yTo="0" target="{target_3}" id="target_3_effect" effectEnd="target_3_effect_effectEndHandler(event)"/>
+		<!--枪-->
+		<s:Move duration="500" yFrom="640" yTo="430" target="{gun_swf}" id="gun_swf_effect" effectEnd="gun_swf_effect_effectEndHandler(event)"/>
+		<s:Move duration="500" yFrom="430" yTo="640" target="{gun_swf}" id="gun_swf_out_effect" startDelay="500" effectEnd="gun_swf_out_effect_effectEndHandler(event)"/>
+		<s:Move duration="500" yFrom="640" yTo="430" target="{gun_swf}" id="gun_swf_in_effect" effectEnd="gun_swf_in_effectEndHandler(event)"/>
+		
+		<!--结果-->
+		<s:Fade duration="500" alphaFrom="0" alphaTo="1" target="{result_1}" id="result_1_effect" effectEnd="result_1_effect_effectEndHandler(event)" />
+		<s:Fade duration="500" alphaFrom="0" alphaTo="1" target="{result_2}" id="result_2_effect" effectEnd="result_2_effect_effectEndHandler(event)" />
+		<s:Fade duration="500" alphaFrom="0" alphaTo="1" target="{result_3}" id="result_3_effect" effectEnd="result_3_effect_effectEndHandler(event)" />
+		
+	</fx:Declarations>
+	
+	<!--背景-->
+	<s:Image source="{bg}" />
+	<!--云朵-->
+	<s:Image id="cloud_1" source="{cloud1}"/>
+	<s:Image source="{cloud2}" x="980"  id="cloud_2" />
+	<s:Image source="{cloud3}" x="1960" id="cloud_3" />
+	<!--小鸟-->
+	<s:SWFLoader x="0" y="150" source="{shssl_brid}" id="fish_a" />
+	<!--树枝-->
+	<s:SWFLoader x="0" y="20" source="{shssl_shuzhi}"/>
+	<!--松鼠-->
+	<s:SWFLoader x="-200" y="0" source="{squirrel}" id="squirrel_swf"/>
+	<!--枪-->
+	<local:GUN x="400" y="640" id="gun_swf"/>
+	
+	<!--当前期号-->
+	<s:Group x="368" y="59" id="last_iusse_group" alpha="0">
+		<s:Rect  width="245" height="32" radiusX="16" radiusY="16">
+			<s:fill>
+				<s:LinearGradient >
+					<s:GradientEntry color="0xffffff"   />
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		<mx:Label id="lastIusse" x="0" y="2" width="245" styleName="shssl_iusse_style" text="第20161214012期"/>
+	</s:Group>
+	<!--倒计时-->
+	<s:Group x="784" y="-213" id="timerComponentNew_group">
+		<shssl:shssl_TimerComponentNew  id="timerComponentNew"/>
+	</s:Group>
+	
+	<!--上期开奖号码-->
+	<s:Group id="last_result_group"  x="200" y="35" alpha="0">
+		<mx:Label  width="100" styleName="shssl_lastIusse_style" text="开奖结果" />
+		<mx:Label  y="25" width="100" styleName="shssl_lastIusse_style" text="856" id="last_result"/>
+	</s:Group>
+	
+	<!--下期开奖时间-->
+	<mx:Label x="15" y="600" width="200" styleName="shssl_time_style" text="开奖时间：16:20:45" id="nextIussekaijiangTime"/>
+	<!--下期开奖期号-->
+	<mx:Label x="15" y="570" width="200" styleName="shssl_nextIusse_style" text="下期开奖：20161214013" id="nextIusse"/>
+	
+	<!--靶子-->
+	<s:Group x="302" y="147" >
+		<s:Image id="target_1" source="{target}" x="0" y="490"/>
+		<s:Image id="target_2" source="{target}" x="125" y="490"/>
+		<s:Image id="target_3" source="{target}" x="250" y="490"/>
+	</s:Group>
+	
+	<!--弹孔-->
+	<s:Image id="Bullet_1" source="{Bullet_holes}" x="357" y="239" visible="false"/>
+	<s:Image id="Bullet_2" source="{Bullet_holes}" x="489" y="268" visible="false"/>
+	<s:Image id="Bullet_3" source="{Bullet_holes}" x="579" y="229" visible="false"/>
+	
+	<!--数字-->
+	<s:Group x="335" y="103">
+		<s:Image id="result_1" source="{img_0}" alpha="0"/>
+		<s:Image id="result_2" x="124" y="0" source="{img_0}" alpha="0"/>
+		<s:Image id="result_3" x="250" y="0" source="{img_0}" alpha="0"/>
+	</s:Group>
+	
+	
+	<!--试一试-->
+	<shssl:TryBtn id="try_btn" x="854" y="561" buttonMode="true" click="trybtn1_clickHandler(event)"/>
+	
+</s:Group>

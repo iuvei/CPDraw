@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true"
+		 width="980" height="630"
+		 creationComplete="group1_creationCompleteHandler(event)" xmlns:pk10="com.xamc.module.pk10.*">
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.service.ServerTool;
+			import com.xamc.service.ServerToolImpl;
+			import com.xamc.single.PublicDataClass;
+			
+			import flash.sampler.NewObjectSample;
+			
+			import mx.core.SoundAsset;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/oneTwoThree_bg.jpg")]
+			private var oneTwoThree_bg:Class; 
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/FirstPlace.png")]
+			private var FirstPlace:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/SecondPlace.png")]
+			private var SecondPlace:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/ThirdPlace.png")]
+			private var ThirdPlace:Class;
+			
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/result_car_1.png")]
+			private var result_car_1:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/result_car_2.png")]
+			private var result_car_2:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/result_car_3.png")]
+			private var result_car_3:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/result_car_4.png")]
+			private var result_car_4:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/result_car_5.png")]
+			private var result_car_5:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/result_car_6.png")]
+			private var result_car_6:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/result_car_7.png")]
+			private var result_car_7:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/result_car_8.png")]
+			private var result_car_8:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/result_car_9.png")]
+			private var result_car_9:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/resultpic/result_car_10.png")]
+			private var result_car_10:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/swf/Colorleaves.swf")]
+			private var Colorleaves:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/speak_open.png")]
+			private var speak_open:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/speak_close.png")]
+			private var speak_close:Class;
+			
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// 请求数据
+				PublicDataClass.RequestData_And_SaveData(init,10);
+			}
+			
+			private function init():void
+			{
+				initData(  (((PublicDataClass.base_lastResultInfo.drawResult).toString()).split(',')).slice(0,3));
+				
+				headGroup.init_ico( PublicDataClass.base_resultArr );
+			}
+			
+			public function initData(_topThree_Arr:Array):void
+			{
+				if(_topThree_Arr.length < 1)
+				{
+					_topThree_Arr = ["1","2","3"];
+				}
+				first.source = this["result_car_" + int(_topThree_Arr[0])];
+				second.source = this["result_car_" + int(_topThree_Arr[1])];
+				third.source = this["result_car_" + int(_topThree_Arr[2])];
+				
+				waitTime.play();
+			}
+			
+			protected function waitTimeHandler(event:EffectEvent):void
+			{
+				first_effect.play();
+				Color_leaves.source = Colorleaves;
+				//播放声音；
+				if(openSoundBoolean)
+				{
+					SpeedChannel_4 = Speed_4.play();
+				}
+			}
+			
+			protected function first_effect_effectEndHandler(event:EffectEvent):void
+			{
+				first_ico_effect.play();
+				second_effect.play();
+			}
+			
+			protected function second_effect_effectEndHandler(event:EffectEvent):void
+			{
+				second_ico_effect.play();
+				third_effect.play();
+			}
+			
+			protected function third_effect_effectEndHandler(event:EffectEvent):void
+			{
+				third_ico_effect.play();
+			}
+			
+			protected function third_ico_effectEndHandler(event:EffectEvent):void
+			{
+				gotoViewTime.play();
+			}
+			
+			protected function gotoViewTimeHandler(event:EffectEvent):void
+			{
+				dispatchEvent(new Event("GoToDataAnalysisEvent",true));
+			}
+			
+			[Bindable]
+			[Embed(source="css/sound/pk10/guzhang.mp3")]
+			private var guzhang:Class;  
+			private var Speed_4:SoundAsset = new guzhang() as SoundAsset;  
+			private var SpeedChannel_4:SoundChannel = new SoundChannel();
+			
+			
+			private var _openSoundBoolean:Boolean = true;
+			
+			
+			[Bindable]
+			public function get openSoundBoolean():Boolean
+			{
+				return _openSoundBoolean;
+			}
+			public function set openSoundBoolean(value:Boolean):void
+			{
+				_openSoundBoolean = value;
+			}
+			protected function openBtn_clickHandler(event:MouseEvent):void
+			{
+				if(openSoundBoolean)
+				{
+					openSoundBoolean = false;
+					return;
+				}else
+				{
+					openSoundBoolean = true;
+					return;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		
+		<s:Fade id="waitTime" duration="1000" target="{bg}" effectEnd="waitTimeHandler(event)"/>
+		
+		<s:Fade id="gotoViewTime" duration="3000" target="{bg}" effectEnd="gotoViewTimeHandler(event)"/>
+		
+		<s:Parallel id="first_effect" target="{first}" effectEnd="first_effect_effectEndHandler(event)">
+			<s:Move autoCenterTransform="true" duration="2000" yFrom="154" yTo="259"/>
+			<s:Scale autoCenterTransform="true" duration="2000" scaleXFrom="0" scaleXTo="0.8" scaleYFrom="0" scaleYTo="0.8" />
+		</s:Parallel>
+		<s:Parallel id="second_effect" target="{second}" effectEnd="second_effect_effectEndHandler(event)">
+			<s:Move autoCenterTransform="true" duration="2000" yFrom="154" yTo="259" xFrom="370" xTo="250"/>
+			<s:Scale autoCenterTransform="true" duration="2000" scaleXFrom="0" scaleXTo="0.6" scaleYFrom="0" scaleYTo="0.6" />
+		</s:Parallel>
+		<s:Parallel id="third_effect" target="{third}" effectEnd="third_effect_effectEndHandler(event)">
+			<s:Move autoCenterTransform="true" duration="2000" yFrom="154" yTo="259" xFrom="440" xTo="560"/>
+			<s:Scale autoCenterTransform="true" duration="2000" scaleXFrom="0" scaleXTo="0.6" scaleYFrom="0" scaleYTo="0.6" />
+		</s:Parallel>
+		
+		<s:Parallel id="first_ico_effect" target="{first_ico}">
+			<s:Move autoCenterTransform="true" duration="500" yFrom="460" yTo="380"/>
+			<s:Fade duration="50" alphaFrom="0" alphaTo="1"/>
+		</s:Parallel>
+		<s:Parallel id="second_ico_effect" target="{second_ico}">
+			<s:Move autoCenterTransform="true" duration="500" yFrom="460" yTo="380"/>
+			<s:Fade duration="50" alphaFrom="0" alphaTo="1"/>
+		</s:Parallel>
+		<s:Parallel id="third_ico_effect" target="{third_ico}" effectEnd="third_ico_effectEndHandler(event)">
+			<s:Move autoCenterTransform="true" duration="500" yFrom="460" yTo="380"/>
+			<s:Fade duration="50" alphaFrom="0" alphaTo="1"/>
+		</s:Parallel>
+		
+		
+	</fx:Declarations>
+	
+	<!--背景-->
+	<s:Image id="bg" source="{oneTwoThree_bg}" />
+	
+	<!--冠军-->
+	<s:Image id="first" x="482" y="219" smooth="true" scaleX="0" scaleY="0" />
+	<!--亚军-->
+	<s:Image id="second" x="450" y="219" smooth="true" scaleX="0" scaleY="0"/>
+	<!--季军-->
+	<s:Image id="third" x="515" y="219" smooth="true" scaleX="0" scaleY="0"/>
+	
+	<!--亚军-->
+	<s:Image id="second_ico" x="280" y="460"  source="{SecondPlace}" />
+	<!--冠军-->
+	<s:Image id="first_ico" x="434" y="460" source="{FirstPlace}"/>
+	<!--季军-->
+	<s:Image id="third_ico" x="598" y="460" source="{ThirdPlace}" />
+	
+	<!--ico-->
+	<pk10:HeadGroup id="headGroup" x="195" y="19"/>
+	
+	<!--上期  期号-->
+	<s:Group x="25" y="48">
+		<mx:Label styleName="dataAnalysis_label_time_iusse" 
+				  text="期号:"/>
+		<s:Label x="50" y="6" styleName="dataAnalysis_label_time_iusse"
+				 text="{ PublicDataClass.base_lastResultInfo.issueNumber }"/>
+	</s:Group>
+	
+	<!--下期  期号  时间-->
+	<s:Group x="750" y="12" width="230" height="65" >
+		<s:VGroup x="0" y="0" gap="15">
+			<mx:Label styleName="dataAnalysis_label_time_iusse_info" 
+					  text="开奖时间:"/>
+			<mx:Label styleName="dataAnalysis_label_time_iusse_info" 
+					  text="下期开奖:"/>
+		</s:VGroup>
+		<s:VGroup x="80" y="7" gap="25">
+			<s:Label styleName="dataAnalysis_label_time_iusse" 
+					 text="{   ((PublicDataClass.base_nowResultInfo.endTime).toString()).split(' ')[1].toString().split('.')[0]}"/>
+			<s:Label styleName="dataAnalysis_label_time_iusse" 
+					 text="{ PublicDataClass.base_nowResultInfo.issueNumber }"/>
+		</s:VGroup>
+	</s:Group>
+	
+	<!--期号  时间      冠亚军和      1~5龙虎-->
+	<s:Group x="0" y="586" width="980" height="35">
+		<s:Label x="50" y="17" styleName="moveCar_time_issue"
+				 text="{ ((PublicDataClass.base_lastResultInfo.endTime).toString()).split(' ')[0] + '     ' +  PublicDataClass.base_lastResultInfo.issueNumber }"/>
+		<!-- 冠亚军和           大1，小0； 单1，双0；龙1，虎0； -->
+		<s:HGroup x="337" y="12" gap="28">
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					   text="{(((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[0].toString()).split(',')[0]}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					   text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[0].toString()).split(',')[1]) == 1?'大':'小'}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					   text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[0].toString()).split(',')[2]) == 1?'单':'双'}"/>
+		</s:HGroup>
+		<!-- 1~5龙虎        龙1，虎0； -->
+		<s:HGroup x="635" y="12" gap="10">
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					   text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[1].toString()).split('')[0]) == 1?'龙':'虎'}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					   text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[1].toString()).split('')[1]) == 1?'龙':'虎'}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					   text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[1].toString()).split('')[2]) == 1?'龙':'虎'}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					   text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[1].toString()).split('')[3]) == 1?'龙':'虎'}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					   text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[1].toString()).split('')[4]) == 1?'龙':'虎'}"/>
+		</s:HGroup>
+	</s:Group>
+	
+	<s:SWFLoader x="280" y="95" id="Color_leaves" width="400" height="360"/>
+	
+	<s:Group x="940" y="12" id="openBtn" click="openBtn_clickHandler(event)" buttonMode="true">
+		<s:Image source="{speak_close}" visible="{ openSoundBoolean?false:true}"/>
+		<s:Image source="{speak_open}" visible="{ openSoundBoolean?true:false}" />
+	</s:Group>
+	
+</s:Group>

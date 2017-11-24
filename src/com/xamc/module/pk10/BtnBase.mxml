@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			private var _bgwidth:Number = 50;
+			private var _bgheight:Number = 25;
+			
+			private var _fontfamliy:String = "微软雅黑";//字体；
+			private var _fontsize:Number = 14;//字体大小；
+			private var _fontcolor:uint = 0x000000;//字体颜色；
+			
+			private var _overcolor:uint = 0x000000;//字体颜色；
+			private var _outcolor:uint = 0x000000;//字体颜色；
+			
+			private var _labString:String = "";//显示文字；
+			
+			
+			[Bindable]
+			public function get labString():String
+			{
+				return _labString;
+			}
+			
+			public function set labString(value:String):void
+			{
+				_labString = value;
+			}
+			
+			[Bindable]
+			public function get outcolor():uint
+			{
+				return _outcolor;
+			}
+			
+			public function set outcolor(value:uint):void
+			{
+				_outcolor = value;
+			}
+			
+			[Bindable]
+			public function get overcolor():uint
+			{
+				return _overcolor;
+			}
+			
+			public function set overcolor(value:uint):void
+			{
+				_overcolor = value;
+			}
+			
+			[Bindable]
+			public function get fontcolor():Number
+			{
+				return _fontcolor;
+			}
+			
+			public function set fontcolor(value:Number):void
+			{
+				_fontcolor = value;
+			}
+			
+			[Bindable]
+			public function get fontsize():Number
+			{
+				return _fontsize;
+			}
+			
+			public function set fontsize(value:Number):void
+			{
+				_fontsize = value;
+			}
+			
+			[Bindable]
+			public function get fontfamliy():String
+			{
+				return _fontfamliy;
+			}
+			
+			public function set fontfamliy(value:String):void
+			{
+				_fontfamliy = value;
+			}
+			
+			[Bindable]
+			public function get bgheight():Number
+			{
+				return _bgheight;
+			}
+			
+			public function set bgheight(value:Number):void
+			{
+				_bgheight = value;
+			}
+			
+			[Bindable]
+			public function get bgwidth():Number
+			{
+				return _bgwidth;
+			}
+			
+			public function set bgwidth(value:Number):void
+			{
+				_bgwidth = value;
+			}
+			
+			protected function group1_mouseOverHandler(event:MouseEvent):void
+			{
+				fontcolor = overcolor;
+			}
+			
+			protected function group1_mouseOutHandler(event:MouseEvent):void
+			{
+				fontcolor = outcolor;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	
+	<s:Group buttonMode="true" mouseOver="group1_mouseOverHandler(event)" mouseOut="group1_mouseOutHandler(event)">
+		
+		<s:Rect width="{bgwidth}" height="{bgheight}">
+			<s:fill>
+				<s:LinearGradient rotation="90">
+					<s:GradientEntry color="0x000000" alpha="1"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		
+		<s:HGroup width="{bgwidth}" height="{bgheight}" verticalAlign="middle" horizontalAlign="center">
+			<mx:Label text="{labString}" fontFamily="{fontfamliy}" fontSize="{fontsize}" color="{fontcolor}" buttonMode="true" mouseChildren="false"/>
+		</s:HGroup>
+		
+	</s:Group>
+	
+	
+	
+</s:Group>

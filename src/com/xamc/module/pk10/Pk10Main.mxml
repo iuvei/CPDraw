@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="980" height="650"
+					   creationComplete="windowedapplication1_creationCompleteHandler(event)" 
+					   xmlns:load="com.xamc.components.load.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.module.pk10.DataAnalysis;
+			import com.xamc.module.pk10.MoveCar;
+			import com.xamc.single.PublicDataClass;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			private var dataAnalysis:Group;//数据分析页面
+			private var moveCar:Group;//车道页面；
+			private var oneTwoThree:OneTwoThree;//前三名页面；
+			
+			
+			protected function windowedapplication1_creationCompleteHandler(event:FlexEvent):void
+			{
+				//跳转 数据分析页面
+				addEventListener("GoToDataAnalysisEvent",GoToDataAnalysisEventHandler);
+				//跳转 车道页面
+				addEventListener("GoToMoveCarEvent",GoToMoveCarEventHandler);
+				//跳转 前三名  冠亚季军页面；
+				addEventListener("GoToOneTwoThreeEvent",GoToOneTwoThreeEventHandler);
+				
+				init();
+			}
+			private function init():void
+			{
+				//初始化  加载数据分析页面；
+				if(PublicDataClass.base_game_state)//0为开奖，1正在开奖
+				{
+					moveCar = new MoveCar();
+					main_group.addElement(moveCar);
+				}
+				else{
+					dataAnalysis = new DataAnalysis();
+					main_group.addElement(dataAnalysis);
+				}
+			}
+			
+			//跳转 数据分析页面
+			private function GoToDataAnalysisEventHandler(e:Event):void
+			{
+				//加载   车道
+				main_group.removeAllElements();
+				dataAnalysis = null;
+				moveCar = null;
+				oneTwoThree = null;
+				
+				dataAnalysis = new DataAnalysis();
+				main_group.addElement(dataAnalysis);
+			}
+			
+			//跳转 车道
+			private function GoToMoveCarEventHandler(e:Event):void
+			{
+				//加载数据分析页面；
+				main_group.removeAllElements();
+				dataAnalysis = null;
+				moveCar = null;
+				oneTwoThree = null;
+				
+				moveCar = new MoveCar();
+				main_group.addElement(moveCar);
+			}
+			
+			//跳转 前三名  冠亚季军页面；
+			private function GoToOneTwoThreeEventHandler(e:Event):void
+			{
+				//加载   冠亚季军页面
+				main_group.removeAllElements();
+				dataAnalysis = null;
+				moveCar = null;
+				oneTwoThree = null;
+				
+				oneTwoThree = new OneTwoThree();
+				main_group.addElement(oneTwoThree);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<s:Group id="main_group" />
+	
+</s:Group>

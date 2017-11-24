@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/xjssc/try_bg.png")]
+			private var try_bg:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/xjssc/try_1.png")]
+			private var try_1:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/xjssc/try_2.png")]
+			private var try_2:Class;
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			protected function image1_mouseOutHandler(event:MouseEvent):void
+			{
+				img.source = try_1;
+			}
+			
+			protected function image1_mouseOverHandler(event:MouseEvent):void
+			{
+				img.source = try_2;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<!--背景-->
+	<s:Group mouseOver="image1_mouseOverHandler(event)" mouseOut="image1_mouseOutHandler(event)">
+		<s:Image source="{try_bg}" smooth="true" />
+		<s:Image x="17" y="12" source="{try_1}" smooth="true"  id="img"/>
+	</s:Group>
+	
+</s:Group>

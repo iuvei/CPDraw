@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:components="components.*"
+		 creationComplete="group1_creationCompleteHandler()" 
+		 xmlns:skin="components.skin.*" 
+		 xmlns:pk10_A="com.xamc.module.pk10_A.*">
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.single.PublicDataClass;
+			
+			import mx.controls.Alert;
+			
+			
+			protected function group1_creationCompleteHandler():void
+			{
+				//创建ico 
+				if(PublicDataClass.base_resultArr == null || PublicDataClass.base_resultArr.length < 1)
+				{
+					PublicDataClass.base_resultArr = new Array();
+					PublicDataClass.base_resultArr = [1,2,3,4,5,6,7,8,9,10];
+				}
+				
+				init_ico(PublicDataClass.base_resultArr);
+			}
+			
+			//创建ico 
+			public function init_ico(obj_icoArr:Array):void
+			{
+				for(var i:int=0; i<obj_icoArr.length ; i++)
+				{
+					this["sort_" + (i+1)].isShow = obj_icoArr[i];
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<s:HGroup gap="5">
+		<pk10_A:IcoShow id="sort_1"/>
+		<pk10_A:IcoShow id="sort_2"/>
+		<pk10_A:IcoShow id="sort_3"/>
+		<pk10_A:IcoShow id="sort_4"/>
+		<pk10_A:IcoShow id="sort_5"/>
+		<pk10_A:IcoShow id="sort_6"/>
+		<pk10_A:IcoShow id="sort_7"/>
+		<pk10_A:IcoShow id="sort_8"/>
+		<pk10_A:IcoShow id="sort_9"/>
+		<pk10_A:IcoShow id="sort_10"/>
+	</s:HGroup>
+</s:Group>

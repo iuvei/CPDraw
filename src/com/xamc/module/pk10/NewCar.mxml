@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="group1_creationCompleteHandler(event)" 
+		 contentBackgroundColor="0x000000"
+		 xmlns:local="*">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			
+			//			private var _ax:Number = 0.5;//加速度
+			//			private var _vx:Number = 0;//速度
+			//			
+			//			private var _v1:Number = 25;//最大速度（0~v1）设为定值
+			//			private var _v2:Number = -15;//随机速度（v2）
+			//			private var _v3:Number = -25;//最小速度（0~v3）
+			//			private var _sameSpeed_num:int = 5;//匀速的时间次数；
+			
+			
+			private var _ax:Number;//加速度
+			private var _vx:Number;//速度
+			
+			private var _v1:Number;//最大速度（0~v1）设为定值
+			private var _v2:Number;//随机速度（v2）
+			private var _v3:Number;//最小速度（0~v3）
+			private var _sameSpeed_num_jia:int;//匀速的时间次数；
+			private var _sameSpeed_num_jian:int;//匀速的时间次数；
+			
+			private var timer_sameSpeed:Timer;//计时器；
+			
+			private var _mark:String;//编号；
+			private var _end_mark:Boolean = false;//结束的标志；
+			
+			public var getDataArr:Array = new Array();
+			
+			public var n:int = 0;//循环次数；
+			
+			public var result:int;//开奖结果；
+			
+			private var _end_ax:Number;//结束的加速度；
+			private var _end_vx:Number;//结束的速度；
+			private var _end_v1:Number;//结束的最大速度；
+			
+			
+			
+			[Bindable]
+			public function get end_v1():Number
+			{
+				return _end_v1;
+			}
+			
+			public function set end_v1(value:Number):void
+			{
+				_end_v1 = value;
+			}
+			
+			[Bindable]
+			public function get end_vx():Number
+			{
+				return _end_vx;
+			}
+			
+			public function set end_vx(value:Number):void
+			{
+				_end_vx = value;
+			}
+			
+			[Bindable]
+			public function get end_ax():Number
+			{
+				return _end_ax;
+			}
+			
+			public function set end_ax(value:Number):void
+			{
+				_end_ax = value;
+			}
+			
+			[Bindable]
+			public function get end_mark():Boolean
+			{
+				return _end_mark;
+			}
+			
+			public function set end_mark(value:Boolean):void
+			{
+				_end_mark = value;
+			}
+			
+			[Bindable]
+			public function get mark():String
+			{
+				return _mark;
+			}
+			
+			public function set mark(value:String):void
+			{
+				_mark = value;
+				
+				set_source(int(_mark))
+			}
+			
+			[Bindable]
+			public function get sameSpeed_num_jian():int
+			{
+				return _sameSpeed_num_jian;
+			}
+			
+			public function set sameSpeed_num_jian(value:int):void
+			{
+				_sameSpeed_num_jian = value;
+			}
+			
+			[Bindable]
+			public function get sameSpeed_num_jia():int
+			{
+				return _sameSpeed_num_jia;
+			}
+			
+			public function set sameSpeed_num_jia(value:int):void
+			{
+				_sameSpeed_num_jia = value;
+			}
+			
+			[Bindable]
+			public function get v3():Number
+			{
+				return _v3;
+			}
+			
+			public function set v3(value:Number):void
+			{
+				_v3 = value;
+			}
+			
+			[Bindable]
+			public function get v2():Number
+			{
+				return _v2;
+			}
+			
+			public function set v2(value:Number):void
+			{
+				_v2 = value;
+			}
+			
+			[Bindable]
+			public function get v1():Number
+			{
+				return _v1;
+			}
+			
+			public function set v1(value:Number):void
+			{
+				_v1 = value;
+			}
+			
+			[Bindable]
+			public function get vx():Number
+			{
+				return _vx;
+			}
+			
+			public function set vx(value:Number):void
+			{
+				_vx = value;
+			}
+			
+			[Bindable]
+			public function get ax():Number
+			{
+				return _ax;
+			}
+			
+			public function set ax(value:Number):void
+			{
+				_ax = value;
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				//				carMove();
+			}
+			
+			public function carMove():void
+			{
+				car_1.addEventListener(Event.ENTER_FRAME,car_1_enterframeHandler);
+			}
+			//加速
+			private function car_1_enterframeHandler(event:Event):void
+			{
+				if(vx < v1 )
+				{
+					vx += ax;
+					car_1.x -= vx;
+					flame.visible = true;
+					shadow.visible = true;
+				}
+				else{
+					car_1.removeEventListener(Event.ENTER_FRAME,car_1_enterframeHandler);
+					car_enterframeHandler();
+					vx = 0;
+				}
+			}
+			//匀速
+			private function car_enterframeHandler():void
+			{
+				
+				timer_sameSpeed = new Timer(1000,sameSpeed_num_jia);
+				timer_sameSpeed.addEventListener(TimerEvent.TIMER_COMPLETE,timer_sameSpeed_jiaCompleteHandler);
+				timer_sameSpeed.start();
+				flame.visible = false;
+			}
+			private function timer_sameSpeed_jiaCompleteHandler(event:TimerEvent):void
+			{
+				timer_sameSpeed.stop();
+				timer_sameSpeed.removeEventListener(TimerEvent.TIMER_COMPLETE,timer_sameSpeed_jiaCompleteHandler);
+				timer_sameSpeed = null;
+				car_1.addEventListener(Event.ENTER_FRAME,car_2_enterframeHandler);
+				shadow.visible = false;
+			}
+			//减速
+			private function car_2_enterframeHandler(event:Event):void
+			{
+				if(vx > v2)
+				{
+					vx -= ax;
+					car_1.x -= vx;
+				}
+				else{
+					car_1.removeEventListener(Event.ENTER_FRAME,car_2_enterframeHandler);
+					car_3_enterframeHandler();
+				}	
+			}
+			//匀速
+			private function car_3_enterframeHandler():void
+			{
+				
+				timer_sameSpeed = new Timer(1000,sameSpeed_num_jian);
+				timer_sameSpeed.addEventListener(TimerEvent.TIMER_COMPLETE,timer_sameSpeed_jianCompleteHandler);
+				timer_sameSpeed.start();
+			}
+			private function timer_sameSpeed_jianCompleteHandler(event:TimerEvent):void
+			{
+				timer_sameSpeed.stop();
+				timer_sameSpeed.removeEventListener(TimerEvent.TIMER_COMPLETE,timer_sameSpeed_jianCompleteHandler);
+				timer_sameSpeed = null;
+				car_1.addEventListener(Event.ENTER_FRAME,car_4_enterframeHandler);
+			}
+			private function car_4_enterframeHandler(event:Event):void
+			{
+				if(vx > v3 )
+				{
+					vx -= ax;
+					car_1.x -= vx;
+				}
+				else{
+					
+					if(end_mark && n == 0)
+					{
+						//结束；
+						car_1.removeEventListener(Event.ENTER_FRAME,car_4_enterframeHandler);
+						vx = 0;
+						end();
+						car_1.addEventListener(Event.ENTER_FRAME,end_enterframeHandler);
+					}else{
+						car_1.removeEventListener(Event.ENTER_FRAME,car_4_enterframeHandler);
+						car_1.addEventListener(Event.ENTER_FRAME,car_1_enterframeHandler);
+						vx = 0;
+						
+						car_1.x = 0;
+						
+						//重新给数据
+						n++;
+						if(n>8){
+							n = 0;
+						}else
+						{
+							n++;
+						}
+						//mark = (i+1).toString();
+						ax = getDataArr[n].ax;
+						vx = getDataArr[n].vx;
+						v1 = getDataArr[n].v1;
+						v2 = getDataArr[n].v2;
+						v3 = getDataArr[n].v3;
+						sameSpeed_num_jia = getDataArr[n].sameSpeed_num_jia;
+						sameSpeed_num_jian = getDataArr[n].sameSpeed_num_jian;
+					}
+				}
+			}
+			
+			
+			private var plan_arr:Array =[
+				{sort_num:"10",end_ax:0.3,end_vx:0,end_v1:21},
+				{sort_num:"9",end_ax:0.3,end_vx:0,end_v1:20},
+				{sort_num:"8",end_ax:0.3,end_vx:0,end_v1:19},
+				{sort_num:"7",end_ax:0.3,end_vx:0,end_v1:18},
+				{sort_num:"6",end_ax:0.3,end_vx:0,end_v1:17},
+				{sort_num:"5",end_ax:0.3,end_vx:0,end_v1:16},
+				{sort_num:"4",end_ax:0.3,end_vx:0,end_v1:14},
+				{sort_num:"3",end_ax:0.3,end_vx:0,end_v1:12},
+				{sort_num:"2",end_ax:0.3,end_vx:0,end_v1:10},
+				{sort_num:"1",end_ax:0.3,end_vx:0,end_v1:8},
+			];
+			
+			public function end():void
+			{
+				ax = 0;
+				vx = 0;
+				v1 = 0;
+				v2 = 0;
+				v3 = 0;
+				sameSpeed_num_jia = 0;
+				sameSpeed_num_jian = 0;
+				
+				end_ax = plan_arr[result].end_ax;
+				end_vx = plan_arr[result].end_vx;
+				end_v1 = plan_arr[result].end_v1;
+			}
+			
+			//结束
+			private function end_enterframeHandler(event:Event):void
+			{
+				if(end_vx < end_v1 )
+				{
+					end_vx += end_ax;
+					car_1.x -= end_vx;
+					flame.visible = true;
+					shadow.visible = true;
+				}
+				else{
+					dispatchEvent(new Event("MoveEndEvent",true));
+					car_1.removeEventListener(Event.ENTER_FRAME,end_enterframeHandler);
+				}
+			}
+			
+			//结束——过线
+			public function end_Overline_Handler():void
+			{
+				car_1.addEventListener(Event.ENTER_FRAME,Overline_enterframeHandler);
+			}
+			private function Overline_enterframeHandler(event:Event):void
+			{
+				if(end_vx < end_v1 )
+				{
+					end_vx += end_ax;
+					car_1.x -= end_vx;
+				}
+				else{
+					dispatchEvent(new Event("AllMoveEndEvent",true));
+					car_1.removeEventListener(Event.ENTER_FRAME,Overline_enterframeHandler);
+					
+					rotate_1.stop();
+					rotate_1.target = null;
+					rotate_2.stop();
+					rotate_2.target = null;
+					car_1.removeElement(flame);
+					flame = null;
+					car_1.removeElement(shadow);
+					shadow = null;
+				}
+			}
+			
+			public function rotate_start():void
+			{
+				rotate_1.target = wheel_1;
+				rotate_1.play();
+				rotate_2.target = wheel_2;
+				rotate_2.play();
+			}
+			protected function rotate_1_effectEndHandler(event:EffectEvent):void
+			{
+				rotate_1.target = wheel_1;
+				rotate_1.play();
+			}
+			protected function rotate_2_effectEndHandler(event:EffectEvent):void
+			{
+				rotate_2.target = wheel_2;
+				rotate_2.play();
+			}
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/car/car_1.png")]
+			private var carNum_1:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/car_2.png")]
+			private var carNum_2:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/car_3.png")]
+			private var carNum_3:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/car_4.png")]
+			private var carNum_4:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/car_5.png")]
+			private var carNum_5:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/car_6.png")]
+			private var carNum_6:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/car_7.png")]
+			private var carNum_7:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/car_8.png")]
+			private var carNum_8:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/car_9.png")]
+			private var carNum_9:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/car_10.png")]
+			private var carNum_10:Class; 
+			
+		
+			[Bindable]
+			[Embed(source="css/img/pk10/car/wheel_1.png")]
+			private var wheel_11:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/wheel_2.png")]
+			private var wheel_22:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10/car/wheel_3.png")]
+			private var wheel_33:Class; 
+			
+			
+			
+			private function set_source(num:int):void
+			{
+				//车资源；
+				car_pic.source = this["carNum_" + num];
+				
+				//车轮资源；
+				if(num == 1)
+				{
+					wheel_1.source = wheel_11;
+					wheel_1.x = 6;
+					wheel_1.y = 16;
+					wheel_2.source = wheel_11;
+					wheel_2.x = 83;
+					wheel_2.y = 15;
+					number.x = 45;
+					number.y = 14;
+					flame.x = 114;
+					flame.y = 20;
+				}
+				if(num == 2)
+				{
+					wheel_1.source = wheel_11;
+					wheel_1.x = 6;
+					wheel_1.y = 16;
+					wheel_2.source = wheel_11;
+					wheel_2.x = 85;
+					wheel_2.y = 15;
+					number.x = 45;
+					number.y = 14;
+					flame.x = 114;
+					flame.y = 20;
+				}
+				if(num == 3)
+				{
+					wheel_1.source = wheel_11;
+					wheel_1.x = 6;
+					wheel_1.y = 15;
+					wheel_2.source = wheel_11;
+					wheel_2.x = 82;
+					wheel_2.y = 15;
+					number.x = 45;
+					number.y = 14;
+					flame.x = 111;
+					flame.y = 20;
+				}
+				if(num == 4)
+				{
+					wheel_1.source = wheel_11;
+					wheel_1.x = 6;
+					wheel_1.y = 15;
+					wheel_2.source = wheel_11;
+					wheel_2.x = 79;
+					wheel_2.y = 14;
+					number.x = 45;
+					number.y = 14;
+					flame.x = 108;
+					flame.y = 20;
+				}
+				if(num == 5)
+				{
+					wheel_1.source = wheel_22;
+					wheel_1.x = 6;
+					wheel_1.y = 15;
+					wheel_2.source = wheel_22;
+					wheel_2.x = 78;
+					wheel_2.y = 14;
+					number.x = 44;
+					number.y = 14;
+					flame.x = 105;
+					flame.y = 20;
+				}
+				if(num == 6)
+				{
+					wheel_1.source = wheel_22;
+					wheel_1.x = 5;
+					wheel_1.y = 15;
+					wheel_2.source = wheel_22;
+					wheel_2.x = 77;
+					wheel_2.y = 14;
+					number.x = 43;
+					number.y = 12;
+					flame.x = 104;
+					flame.y = 20;
+				}
+				if(num == 7)
+				{
+					wheel_1.source = wheel_22;
+					wheel_1.x = 5;
+					wheel_1.y = 15;
+					wheel_2.source = wheel_22;
+					wheel_2.x = 77;
+					wheel_2.y = 14;
+					number.x = 42;
+					number.y = 12;
+					flame.x = 102;
+					flame.y = 20;
+				}
+				if(num == 8)
+				{
+					wheel_1.source = wheel_22;
+					wheel_1.x = 5;
+					wheel_1.y = 14;
+					wheel_2.source = wheel_22;
+					wheel_2.x = 72;
+					wheel_2.y = 13;
+					number.x = 40;
+					number.y = 12;
+					flame.x = 98;
+					flame.y = 20;
+				}
+				if(num == 9)
+				{
+					wheel_1.source = wheel_33;
+					wheel_1.x = 6;
+					wheel_1.y = 14;
+					wheel_2.source = wheel_33;
+					wheel_2.x = 72;
+					wheel_2.y = 13;
+					number.x = 40;
+					number.y = 10;
+					flame.x = 95;
+					flame.y = 20;
+				}
+				if(num == 10)
+				{
+					wheel_1.source = wheel_33;
+					wheel_1.x = 6;
+					wheel_1.y = 14;
+					wheel_2.source = wheel_33;
+					wheel_2.x = 70;
+					wheel_2.y = 13;
+					number.x = 39;
+					number.y = 11;
+					flame.x = 93;
+					flame.y = 20;
+				}
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		
+		<s:Rotate id="rotate_1" autoCenterTransform="true" angleFrom="0" angleTo="360" duration="100"
+				  effectEnd="rotate_1_effectEndHandler(event)"/>
+		<s:Rotate id="rotate_2" autoCenterTransform="true" angleFrom="0" angleTo="360" duration="100"
+				  effectEnd="rotate_2_effectEndHandler(event)"/>
+		
+	</fx:Declarations>
+	<s:Group id="car_1" x="0" width="100%" height="100%">
+		<s:Image id="car_pic" source="css/img/pk10/car/car_1.png"/>
+		<s:Image id="wheel_1" x="6" y="16" source="css/img/pk10/car/wheel_1.png"/>
+		<s:Image id="wheel_2" x="83" y="15" source="css/img/pk10/car/wheel_1.png"/>
+		<s:Label id="number" width="22" textAlign="center" color="#FFFFFF" fontSize="16" text="{mark}" fontStyle="italic" fontWeight="bold"/>
+		<s:SWFLoader id="flame" x="114" y="20" source="@Embed('css/img/pk10/swf/flame.swf')" visible="false"/>
+		<s:SWFLoader id="shadow" x="0" y="16" source="@Embed('css/img/pk10/swf/shadow.swf')" visible="false"/>
+	</s:Group>
+	
+	<!--<s:Group id="car_1" visible="false">
+	<local:car id="car_ex"/>
+	</s:Group>-->
+</s:Group>

@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 width="980" height="630"
+		 xmlns:components="components.*" xmlns:skin="components.skin.*"
+		 xmlns:pk10_A="com.xamc.module.pk10_A.*"
+		 creationComplete="group1_creationCompleteHandler(event)"
+		 >
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.service.ServerTool;
+			import com.xamc.service.ServerToolImpl;
+			import com.xamc.single.PublicDataClass;
+			
+			import mx.charts.HitData;
+			import mx.charts.events.ChartItemEvent;
+			import mx.charts.renderers.CircleItemRenderer;
+			import mx.charts.series.items.LineSeriesItem;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/dataAnalysis_bg.jpg")]
+			private var dataAnalysis_bg:Class; 
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/btn_bg.png")]
+			private var btn_bg:Class; 
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/grid.png")]
+			private var grid:Class;
+			
+			private var _Ranking:int = 1;
+			private var RankingArr:Array = ['',"冠军","亚军","季军","第四名","第五名","第六名","第七名","第八名","第九名","第十名",];
+			
+			private var saveNowCarNum:int = 1;
+			
+			[Bindable]
+			public function get Ranking():int
+			{
+				return _Ranking;
+			}
+			
+			public function set Ranking(value:int):void
+			{
+				_Ranking = value;
+			}
+			
+			protected function goback_mouseOverHandler(event:MouseEvent):void
+			{
+				goback.setStyle("color","#000000");
+			}
+			protected function goback_mouseOutHandler(event:MouseEvent):void
+			{
+				goback.setStyle("color","#FFFFFF");
+			}
+			
+			protected function goback_clickHandler(event:MouseEvent):void
+			{
+				dispatchEvent(new Event("GoToMoveCarEvent",true));
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// 请求数据
+				PublicDataClass.RequestData_And_SaveData(init,10);
+				
+				lineSeries.setStyle("fill", 0xffffff);
+				lineSeries.setStyle("radius", 4);
+			}
+			
+			private function init():void
+			{
+				//创建CarNumSkin
+				init_CarNumSkin(PublicDataClass.base_resultArr);
+				//保存当前选择的车号；默认选择数组第一位。
+				saveNowCarNum = 0;
+				//模拟数据；
+				imitationData();
+				//构建列表
+				getData_BuildView(saveNowCarNum)
+				//倒计时
+				time_component.init( PublicDataClass.base_nowResultInfo.residualTime);
+				time_component.addEventListener("CountdownCompleteEvent",CountdownCompleteEventHandler);
+			}
+			
+			//模拟数据；
+			private var dataArr:ArrayCollection = new ArrayCollection();
+			private function imitationData():void
+			{
+				var obj:Object;
+				var item:Array = new Array();
+				for(var i:int=0; i< 10;i++)
+				{
+					item = new Array();
+					var showNum:int = PublicDataClass.base_historyDataIusseArr.length;
+					for(var j:int= 0; j< showNum; j++)
+					{
+						if((showNum-j)<=30){//处理数据，只显示最近30期的走势
+							obj = new Object();
+							obj.IssueNum = PublicDataClass.base_historyDataIusseArr[j];
+							//						obj.CarNum = int(Math.random()*10)+1;
+							obj.CarNum = ((PublicDataClass.base_historyDataArr[i].rank).toString()).split(",")[j];
+							item.push(obj);
+						}
+					}
+					dataArr.addItem(item);
+				}
+				
+				//处理异常；
+				if(dataArr.length >　1)
+				{
+					linechart.dataProvider = dataArr[0];
+				}else{
+					return;
+				}
+			}
+			
+			protected function btn_clickHandler(event:MouseEvent):void
+			{
+				//设置状态
+				for(var i:int=1; i<=10;i++)
+				{
+					this["btn_" + i].isShow = false;
+				}
+				(event.currentTarget as CarNumSkin).isShow = true;
+				
+				//处理异常；
+				if(dataArr.length <　1)
+				{
+					return;	
+				}
+				//设置数据
+				var index:int = int((event.currentTarget as CarNumSkin).id.split("_")[1] - 1);
+				linechart.dataProvider = dataArr[index];
+				//设置标签
+				Ranking = (event.currentTarget as CarNumSkin).id.split("_")[1];
+				//保存当前选择的车号；
+				saveNowCarNum = index;
+				//构建列表
+				getData_BuildView(saveNowCarNum)
+			}
+			
+			//创建CarNumSkin
+			public function init_CarNumSkin(obj_CarNumSkinArr:Array):void
+			{
+				for(var i:int=0; i<obj_CarNumSkinArr.length ; i++)
+				{
+					this["btn_" + (i+1)].souceIndex = obj_CarNumSkinArr[i];
+				}
+			}
+			
+			//构建列表
+			private function getData_BuildView(nowSelectNum:int):void
+			{
+				//大小单双统计；
+				da.text = "大" + PublicDataClass.base_historyDataArr[nowSelectNum].da;
+				xiao.text = "小" + PublicDataClass.base_historyDataArr[nowSelectNum].xiao;
+				dan.text = "单" + PublicDataClass.base_historyDataArr[nowSelectNum].dan;
+				shuang.text = "双" + PublicDataClass.base_historyDataArr[nowSelectNum].shuang;
+				
+				for(var i:int=0; i<10; i++)
+				{
+					this["zongkai_" + (i+1)].text = ((PublicDataClass.base_historyDataArr[nowSelectNum].weiRanksSum).toString()).split(",")[i];
+				}
+				for(var i:int=0; i<10; i++)
+				{
+					this["weikai_" + (i+1)].text = ((PublicDataClass.base_historyDataArr[nowSelectNum].weiRanksLoss).toString()).split(",")[i];
+				}
+			}
+			
+			//图标tips
+			private function pieChart_dataTipFunction(item:HitData):String { 
+				var LCI:LineSeriesItem = item.chartItem as LineSeriesItem; 
+				return "<font color='#ff0000'>期号: </font>" + LCI.item.IssueNum +　"</b><br/>"+
+					"<font color='#ff0000'>车号: </font>" + LCI.item.CarNum +　"</b><br/>";
+			}
+			
+			//倒计时 走完， 跳转开奖页面；
+			private function CountdownCompleteEventHandler(e:Event):void
+			{
+				dispatchEvent(new Event("GoToMoveCarEvent",true));
+			}
+			
+			protected function linechart_itemRollOverHandler(event:ChartItemEvent):void
+			{
+				//				linechart.graphics.clear();
+				//				linechart.graphics.lineStyle(1, 0xa1cc4a, 0.5);
+				//				linechart.graphics.moveTo(event.localX, event.localY);
+				//				linechart.graphics.lineTo(0, event.localY);
+				//				linechart.graphics.moveTo(event.localX, event.localY);
+				//				linechart.graphics.lineTo(event.localX, linechart.height);
+				//				linechart.graphics.endFill();
+			}
+			
+			protected function linechart_itemRollOutHandler(event:ChartItemEvent):void
+			{
+				//				linechart.graphics.clear();
+			}
+			
+		]]>  
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		
+		<!-- 线条样式 -->
+		<mx:Stroke id = "s1" color="0xc55662" weight="2" />  
+		<!-- 线条点样式 （外圈颜色同线条颜色，外圈线条粗细为1) -->
+		<mx:SolidColorStroke id = "pointS1" color="0xc55662" weight="2" caps="square" joints="bevel" />
+		<mx:SeriesSlide id="slide" duration="1000" direction="up" />
+	</fx:Declarations>
+	
+	<!--背景-->
+	<s:Image source="{dataAnalysis_bg}"/>
+	
+	<!--ico-->
+	<pk10_A:HeadGroup x="261" y="25"/>
+	
+	<!--上期  期号-->
+	<s:Group x="135" y="35">
+		<mx:Label styleName="pk10_A_labelStyle_1" 
+				  text="期号:"/>
+		<s:Label x="40" y="7" styleName="pk10_A_labelStyle_1"
+				 text="{ PublicDataClass.base_lastResultInfo.issueNumber }"/>
+	</s:Group>
+	
+	<!--下期  期号  时间-->
+	<s:Group x="835" y="23" width="125" height="53" >
+		<mx:Label styleName="pk10_A_labelStyle_1" text="开奖时间:"/>
+		<mx:Label x="0" y="20" styleName="pk10_A_labelStyle_1" text="下期开奖:"/>
+		
+		<s:Label x="67" y="8" styleName="pk10_A_labelStyle_1"
+				 text="{   ((PublicDataClass.base_nowResultInfo.endTime).toString()).split(' ')[1].toString().split('.')[0]}"/>
+		<s:Label x="67" y="28" styleName="pk10_A_labelStyle_1" 
+				 text="{ PublicDataClass.base_nowResultInfo.issueNumber }"/>
+	</s:Group>
+	
+	
+	
+	<s:Group x="62" y="100">
+		<!--大小单双-->
+		<s:HGroup x="0" y="-3" width="100%" paddingLeft="60" paddingRight="60">
+			<mx:Label width="100%" id="da" 	styleName="label_22"  />
+			<mx:Label width="100%" id="xiao" styleName="label_22" />
+			<mx:Label width="100%" id="dan"  styleName="label_22" />
+			<mx:Label width="100%" id="shuang" styleName="label_22" />
+		</s:HGroup>
+		<s:VGroup x="-35" y="38" gap="7">
+			<mx:Label width="100%" styleName="label_14" text="车号"/>
+			<mx:Label width="100%" styleName="label_14" text="总开"/>
+			<mx:Label width="100%" styleName="label_14" text="未开"/>
+		</s:VGroup>
+		<s:Image x="0" y="32" source="{grid}"/>
+		
+		<!--每个名次的总开未开-->
+		<s:VGroup x="0" y="35" width="550" height="100" gap="1">
+			<!--车号-->
+			<s:HGroup width="100%" gap="1" height="32" verticalAlign="middle">
+				<s:Label width="54" textAlign="center" styleName="label_12" text="1"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="2"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="3"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="4"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="5"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="6"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="7"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="8"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="9"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="10"/>
+			</s:HGroup>
+			<!--总开-->
+			<s:HGroup width="100%" gap="1" height="32" verticalAlign="middle">
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="1" id="zongkai_1"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="2" id="zongkai_2"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="3" id="zongkai_3"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="4" id="zongkai_4"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="5" id="zongkai_5"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="6" id="zongkai_6"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="7" id="zongkai_7"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="8" id="zongkai_8"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="9" id="zongkai_9"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="10" id="zongkai_10"/>
+			</s:HGroup>
+			<!--未开-->
+			<s:HGroup width="100%" gap="1" height="32" verticalAlign="middle">
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="1" id="weikai_1"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="2" id="weikai_2"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="3" id="weikai_3"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="4" id="weikai_4"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="5" id="weikai_5"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="6" id="weikai_6"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="7" id="weikai_7"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="8" id="weikai_8"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="9" id="weikai_9"/>
+				<s:Label width="54" textAlign="center"  styleName="label_12" text="10" id="weikai_10"/>
+			</s:HGroup>
+		</s:VGroup>
+		
+	</s:Group>
+	
+	<!--返回赛道-->
+	<s:Group buttonMode="true" x="813" y="100" mouseOver="goback_mouseOverHandler(event)" mouseOut="goback_mouseOutHandler(event)"
+			 click="goback_clickHandler(event)">
+		<s:Image  source="{btn_bg}"/>
+		<mx:Label id="goback" x="3" y="0" color="#ffffff" fontFamily="微软雅黑" fontSize="12" fontStyle="normal" buttonMode="true" mouseChildren="false"
+				  text="返回赛道>>"/>
+	</s:Group>
+	
+	<!--倒计时-->
+	<pk10_A:TimerComponentNew x="755" y="133" id="time_component" isVisible="true"/>
+	
+	<!--图表-->
+	<s:Group x="34" y="260">
+		<mx:Label x="-5" y="0" color="#FFFFFF" fontFamily="微软雅黑" fontSize="14" fontStyle="normal"
+				  text="车号"/>
+		<mx:Label  color="#FFFFFF" fontFamily="微软雅黑" fontSize="16" fontStyle="normal"
+				   text="{ '----------  ' + RankingArr[Ranking] + '走势图  ----------'}" width="900" textAlign="center"/>
+		<mx:LineChart id="linechart" height="250" width="900"  dataTipFunction="pieChart_dataTipFunction"
+					  y="20" showDataTips="true" dataProvider="{dataArr[1]}" 
+					  itemRollOver="linechart_itemRollOverHandler(event)"
+					  itemRollOut="linechart_itemRollOutHandler(event)"
+					  >  
+			
+			<mx:backgroundElements>
+				<!--定制图表水平网格线,direction有horizontal(水平)、vertical(垂直)-->
+				<!--horizontalChangeCount可设置几个刻度显示一条网格线-->
+				<!--horizontalTickAligned用来确定坐标轴上的刻度和水平网格线位置的对应关系-->
+				<mx:GridLines horizontalShowOrigin="true" gridDirection="both" horizontalChangeCount="1" horizontalTickAligned="false"
+							  >
+					<!--alpha透明度，weight线条的粗细大小-->
+					<mx:horizontalStroke>
+						<mx:Stroke color="#777777" weight="1" alpha="0.3"/>
+					</mx:horizontalStroke>
+					<!--alpha透明度，weight线条的粗细大小-->
+					<mx:verticalStroke>
+						<mx:Stroke color="#777777" weight="1" alpha="0.3" pixelHinting="false" />
+					</mx:verticalStroke>
+				</mx:GridLines>
+			</mx:backgroundElements>
+			
+			<mx:horizontalAxis >  
+				<mx:CategoryAxis categoryField="IssueNum" ticksBetweenLabels="true" id="a1"/>  
+			</mx:horizontalAxis>  
+			<!-- vertical axis ** minorInterval:y轴线条的间隔  interval:y轴数值的间隔,maximum：y轴最大值 , minimum：y轴最小值 --> 
+			<mx:verticalAxis> 
+				<mx:LinearAxis id="a2" baseAtZero="false" minorInterval="1" padding="0.2" 
+							   interval="1" maximum="10" minimum="1" /> 
+			</mx:verticalAxis> 
+			
+			<mx:horizontalAxisRenderers>  
+				<mx:AxisRenderer axis="{a1}" color="#ffffff" fontSize="12" tickPlacement="none"  canDropLabels="true" canStagger="true">  
+					<mx:axisStroke>                     
+						<mx:Stroke color="#ffffff" caps="round" weight="1" miterLimit="10" />
+					</mx:axisStroke>  
+				</mx:AxisRenderer>  
+			</mx:horizontalAxisRenderers>  
+			
+			<mx:verticalAxisRenderers >  
+				<mx:AxisRenderer axis="{a2}" color="#ffffff" fontSize="12" tickPlacement="none" >  
+					<mx:axisStroke>  
+						<mx:Stroke color="#ffffff" caps="round" weight="1"/>  
+					</mx:axisStroke>  
+				</mx:AxisRenderer>  
+			</mx:verticalAxisRenderers>  
+			
+			<mx:series>  
+				<mx:LineSeries id="lineSeries" yField="CarNum"  form="segment" displayName="CarNum" lineStroke="{s1}" 
+							   itemRenderer="mx.charts.renderers.CircleItemRenderer" left="5" right="5" 
+							   stroke="{pointS1}" showDataEffect="{slide}" 
+							   />
+			</mx:series>  
+		</mx:LineChart>  
+	</s:Group>
+	
+	<s:HGroup x="30" y="535" gap="33">
+		<pk10_A:CarNumSkin souceIndex="2" markinfo="冠军" isShow="true" id="btn_1" click="btn_clickHandler(event)"/>
+		<pk10_A:CarNumSkin souceIndex="4" markinfo="亚军" id="btn_2" click="btn_clickHandler(event)"/>
+		<pk10_A:CarNumSkin souceIndex="8" markinfo="季军" id="btn_3" click="btn_clickHandler(event)"/>
+		<pk10_A:CarNumSkin souceIndex="5" markinfo="4st" id="btn_4" click="btn_clickHandler(event)"/>
+		<pk10_A:CarNumSkin souceIndex="7" markinfo="5st" id="btn_5" click="btn_clickHandler(event)"/>
+		<pk10_A:CarNumSkin souceIndex="1" markinfo="6st" id="btn_6" click="btn_clickHandler(event)"/>
+		<pk10_A:CarNumSkin souceIndex="9" markinfo="7st" id="btn_7" click="btn_clickHandler(event)"/>
+		<pk10_A:CarNumSkin souceIndex="3" markinfo="8st" id="btn_8" click="btn_clickHandler(event)"/>
+		<pk10_A:CarNumSkin souceIndex="10" markinfo="9st" id="btn_9" click="btn_clickHandler(event)"/>
+		<pk10_A:CarNumSkin souceIndex="6"  markinfo="10st" id="btn_10" click="btn_clickHandler(event)"/>
+	</s:HGroup>
+	
+</s:Group>

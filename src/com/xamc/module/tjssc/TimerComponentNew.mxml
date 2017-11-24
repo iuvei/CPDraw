@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			//初始化；
+			private var timer:Timer;
+			private var secondNum:int;
+			public function init(str:String):void
+			{
+				lab.visible = true;
+				info_lab.visible = false;
+				
+				if(timer != null)
+				{
+					timer.stop();
+					timer = null;
+				}
+				secondNum = int(str);
+				timer = new Timer(1000,secondNum);
+				timer.addEventListener(TimerEvent.TIMER,timerHandler);
+				timer.addEventListener(TimerEvent.TIMER_COMPLETE,timerCompleteHandler);
+				timer.start();
+			}
+			
+			private function timerHandler(e:TimerEvent):void
+			{
+				if(secondNum <　0)
+				{
+					lab.text = "";
+					lab.visible = false;
+					info_lab.visible = true;
+				}else{
+					lab.text = secondNum.toString();
+					secondNum--;
+				}
+				
+				
+				if(secondNum <　20)
+				{
+					dispatchEvent(new Event("DonotAllowTryEvent",true));
+				}
+			}
+			
+			private function timerCompleteHandler(e:TimerEvent):void
+			{
+				timer.removeEventListener(TimerEvent.TIMER,timerHandler);
+				timer.removeEventListener(TimerEvent.TIMER_COMPLETE,timerCompleteHandler);
+				timer = null;
+				dispatchEvent(new Event("CountdownCompleteEvent",true));
+				
+				lab.visible = false;
+				info_lab.visible = true;
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<s:HGroup>
+		<mx:Label width="120" text="" styleName="tjssc_timeComponentNew_style_1" id="lab"/>
+	</s:HGroup>
+	
+	<s:VGroup id="info_lab" width="100" gap="0" visible="false">
+		<mx:Label width="120" text="正在开奖"  styleName="tjssc_timeComponentNew_style"  />
+	</s:VGroup>
+	
+</s:Group>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="creationCompleteHandler(event)"
+		 width="100%" height="100%"
+		 >
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.single.CurrentBusinessInfo;
+			import com.xamc.single.PublicDataClass;
+			
+			import mx.core.IVisualElement;
+			import mx.events.FlexEvent;
+			import mx.events.ModuleEvent;
+			import mx.modules.IModuleInfo;
+			import mx.modules.ModuleManager;
+			private var _url:String=CurrentBusinessInfo.loadUrl+"com/xamc/module/PK10_AModel.swf?2016121919";
+			private var _moduleInfo:IModuleInfo;
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				// 请求数据
+				PublicDataClass.RequestData_And_SaveData(init,10);
+			}
+			private function init():void
+			{
+				if(_moduleInfo != null)
+				{
+					_moduleInfo.unload();
+				}
+				loadModule();
+			}
+			private function loadModule():void
+			{
+				_moduleInfo = ModuleManager.getModule(_url);
+				_moduleInfo.addEventListener(ModuleEvent.READY, OnReadyHandler);
+				_moduleInfo.addEventListener(ModuleEvent.PROGRESS, OnProgressHandler);
+				_moduleInfo.addEventListener(ModuleEvent.ERROR, OnErrorHandler);
+				_moduleInfo.addEventListener(ModuleEvent.UNLOAD, OnUnLoadHandler);
+				_moduleInfo.load(ApplicationDomain.currentDomain);
+			}
+			
+			private function OnReadyHandler(e:ModuleEvent):void
+			{
+				_moduleInfo.removeEventListener(ModuleEvent.READY, OnReadyHandler);
+				var moduleInfo:IModuleInfo = e.module;
+				var moduleInstance:Object = moduleInfo.factory.create();
+				vb.addElement(moduleInstance as IVisualElement);
+			}
+			private function OnProgressHandler(e:ModuleEvent):void
+			{
+				var bytesLoaded:Number = e.bytesLoaded / e.bytesTotal;
+				trace("已加载：" + int(Number(bytesLoaded.toFixed(2)) * 100) + "%100");
+				loadInfo.text = "已加载：" + int(Number(bytesLoaded.toFixed(2)) * 100) + "%";
+				load_bar.x = Number(bytesLoaded.toFixed(2))*402 -114;
+				load_ico.x = Number(bytesLoaded.toFixed(2))*402 +180;
+			}
+			private function OnErrorHandler(e:ModuleEvent):void
+			{
+				_moduleInfo.removeEventListener(ModuleEvent.ERROR, OnErrorHandler);
+				trace("加载失败！");
+			}
+			private function OnUnLoadHandler(e:ModuleEvent):void
+			{
+				vb.removeAllChildren();
+				_moduleInfo.removeEventListener(ModuleEvent.UNLOAD, OnUnLoadHandler);
+				_moduleInfo = null;
+				trace("卸载完成");
+			}
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/load/pk10_load_logo.jpg")]  
+			public var _loadingLogo:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/load/pk10_load_car.png")]  
+			public var _loadingCar:Class;
+		]]>
+	</fx:Script>
+	
+	<s:Image source="{_loadingLogo}"/>
+	
+	<s:Group x="288" y="495">
+		<s:Rect  width="404" height="21" >
+			<s:fill>
+				<s:SolidColor color="0x999999" />
+			</s:fill>
+			<s:stroke> 
+				<s:SolidColorStroke color="0x000000" weight="2"/> 
+			</s:stroke>
+		</s:Rect>
+	</s:Group>
+	<s:Group x="288" y="495" id="load_bar_mask">
+		<s:Rect  width="404" height="21" >
+			<s:fill>
+				<s:SolidColor color="0x999999" />
+			</s:fill>
+			<s:stroke> 
+				<s:SolidColorStroke color="0x000000" weight="2"/> 
+			</s:stroke>
+		</s:Rect>
+	</s:Group>
+	<s:Group x="-114" y="496" mask="{load_bar_mask}" id="load_bar">
+		<s:Rect  width="402" height="19" >
+			<s:fill>
+				<s:LinearGradient >
+					<s:GradientEntry color="0xfecc45"   />
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+	</s:Group>
+	
+	<s:Image x="180" y="468" source="{_loadingCar}" id="load_ico"/>
+	<mx:Label x="288" y="530" width="402" textAlign="right" text="..." id="loadInfo" color="0x999999"/>
+	
+	
+	<mx:Canvas backgroundAlpha="0" 
+			   horizontalScrollPolicy="off"
+			   verticalScrollPolicy="off" width="100%" height="100%">
+		<mx:VBox id="vb"  width="100%" height="100%"/>
+	</mx:Canvas>
+</s:Group>

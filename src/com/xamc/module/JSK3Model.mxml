@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="980" height="630" 
+		  xmlns:cqssc="com.xamc.module.cqssc.*" 
+		  creationComplete="group1_creationCompleteHandler(event)">
+	<!-- 加载样式 -->
+	<fx:Style source="css/css1.css"/>
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.module.jsk3.Jsk3Main;
+			
+			import mx.events.FlexEvent;
+			
+			private var jsk3Main:Group;//主页面；
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				init();
+			}
+			//初始化
+			private function init():void
+			{
+				jsk3Main = new Jsk3Main();
+				main_group.addElement(jsk3Main);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:Group id="main_group" />
+</s:Module>

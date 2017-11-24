@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="980" height="630" frameRate="36"
+			   creationComplete="creationCompleteHandler(event)"
+			   xmlns:models="com.xamc.module.*"
+			   preloader="com.xamc.components.load.MyProgressBar"
+			   >
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.module.CQSSCloadContainer;
+			import com.xamc.module.JSK3loadContainer;
+			import com.xamc.module.PK10_AloadContainer;
+			import com.xamc.module.PK10loadContainer;
+			import com.xamc.module.SHSSLloadContainer;
+			import com.xamc.module.TJSSCloadContainer;
+			import com.xamc.module.XJSSCloadContainer;
+			import com.xamc.single.CurrentBusinessInfo;
+			
+			import mx.controls.Label;
+			import mx.events.FlexEvent;
+			
+			import spark.components.Image;
+			[Bindable]
+			[Embed(source="css/img/coming.jpg")]  
+			public var _coming:Class;
+			
+			var LotteryId:int = 0;
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				//获取用户余额
+				var LotteryIdStr:String =  ExternalInterface.call("getLotteryId") as String;
+				if(LotteryIdStr){
+					LotteryId = Number(LotteryIdStr);
+				}else{
+					LotteryId = 10;
+				}
+				
+				CurrentBusinessInfo.nowLottery = LotteryId;
+				//初始化加载彩种动画
+				if(10==LotteryId){//PK10
+//					var loadModel:PK10loadContainer = new PK10loadContainer();
+//					this.content.addElement(loadModel);
+					var loadModel:PK10_AloadContainer = new PK10_AloadContainer();
+					this.content.addElement(loadModel);
+				}else if(12==LotteryId){//重庆时时彩
+					var loadModel2:CQSSCloadContainer = new CQSSCloadContainer();
+					this.content.addElement(loadModel2);
+				}else if(14==LotteryId){//新疆时时彩
+					var loadModel3:XJSSCloadContainer = new XJSSCloadContainer();
+					this.content.addElement(loadModel3);
+				}else if(26==LotteryId){//江苏快3
+					var loadModel4:JSK3loadContainer = new JSK3loadContainer();
+					this.content.addElement(loadModel4);
+				}else if(15==LotteryId){//上海时时乐
+					var loadModel5:SHSSLloadContainer = new SHSSLloadContainer();
+					this.content.addElement(loadModel5);
+				}else if(71==LotteryId){//天津时时彩
+					var loadModel6:TJSSCloadContainer = new TJSSCloadContainer();
+					this.content.addElement(loadModel6);
+				}else{
+					//显示敬请期待页面
+					var coming:Image = new Image();
+					coming.source = _coming;
+					this.content.addElement(coming);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:HGroup width="100%" height="100%" id="content" horizontalAlign="center" verticalAlign="middle">
+		
+	</s:HGroup>
+</s:Application>

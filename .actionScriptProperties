@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<actionScriptProperties analytics="false" mainApplicationPath="CPDraw.mxml" projectUUID="38e612fc-f2b3-4433-aad1-65aecf742dc3" version="10">
+  <compiler additionalCompilerArguments="-locale en_US" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+    <compilerSourcePath/>
+    <libraryPath defaultLinkType="1">
+      <libraryPathEntry kind="4" path="">
+        <excludedEntries>
+          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/flex.swc" useDefaultLinkType="false"/>
+          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/core.swc" useDefaultLinkType="false"/>
+        </excludedEntries>
+      </libraryPathEntry>
+      <libraryPathEntry kind="1" linkType="1" path="libs"/>
+      <libraryPathEntry kind="3" linkType="1" path="src/css/img/shssl/swf/gun.swc" useDefaultLinkType="false"/>
+    </libraryPath>
+    <sourceAttachmentPath/>
+  </compiler>
+  <applications>
+    <application path="CPDraw.mxml"/>
+  </applications>
+  <modules>
+    <module application="src/CPDraw.mxml" destPath="com/xamc/module/XJSSCModel.swf" optimize="true" sourcePath="src/com/xamc/module/XJSSCModel.mxml"/>
+    <module application="src/CPDraw.mxml" destPath="com/xamc/module/CQSSCModel.swf" optimize="true" sourcePath="src/com/xamc/module/CQSSCModel.mxml"/>
+    <module application="src/CPDraw.mxml" destPath="com/xamc/module/PK10Model.swf" optimize="true" sourcePath="src/com/xamc/module/PK10Model.mxml"/>
+    <module application="src/CPDraw.mxml" destPath="com/xamc/module/JSK3Model.swf" optimize="true" sourcePath="src/com/xamc/module/JSK3Model.mxml"/>
+    <module application="src/CPDraw.mxml" destPath="com/xamc/module/SHSSLModel.swf" optimize="true" sourcePath="src/com/xamc/module/SHSSLModel.mxml"/>
+    <module application="src/CPDraw.mxml" destPath="com/xamc/module/TJSSCModel.swf" optimize="true" sourcePath="src/com/xamc/module/TJSSCModel.mxml"/>
+    <module application="src/CPDraw.mxml" destPath="com/xamc/module/PK10_AModel.swf" optimize="true" sourcePath="src/com/xamc/module/PK10_AModel.mxml"/>
+  </modules>
+  <buildCSSFiles/>
+  <flashCatalyst validateFlashCatalystCompatibility="false"/>
+</actionScriptProperties>

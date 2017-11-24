@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num.png")]
+			private var car_num:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num_1.png")]
+			private var car_num_1:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num_2.png")]
+			private var car_num_2:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num_3.png")]
+			private var car_num_3:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num_4.png")]
+			private var car_num_4:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num_5.png")]
+			private var car_num_5:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num_6.png")]
+			private var car_num_6:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num_7.png")]
+			private var car_num_7:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num_8.png")]
+			private var car_num_8:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num_9.png")]
+			private var car_num_9:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/carNum/car_num_10.png")]
+			private var car_num_10:Class;
+				
+			private var car_source:Array = ["","0xe96a6a","0x8c7ef4","0xe8b953","0x8bf188","0x56a1e1",
+				"0xe18756","0xaee156","0xbf56e1","0xe778af","0x78e0e7"
+			];
+			
+			private var _souceIndex:int;//目标资源编号；
+			private var _markinfo:String;//目标标签；
+			private var _isShow:Boolean = false;//是否显示；
+			
+			[Bindable]
+			public function get isShow():Boolean
+			{
+				return _isShow;
+			}
+			
+			public function set isShow(value:Boolean):void
+			{
+				_isShow = value;
+			}
+			
+			[Bindable]
+			public function get markinfo():String
+			{
+				return _markinfo;
+			}
+			
+			public function set markinfo(value:String):void
+			{
+				_markinfo = value;
+			}
+			
+			[Bindable]
+			public function get souceIndex():int
+			{
+				return _souceIndex;
+			}
+			
+			public function set souceIndex(value:int):void
+			{
+				_souceIndex = value;
+				
+				targetCar.source = this["car_num_" + souceIndex];
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				targetCar.source = this["car_num_" + souceIndex];
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	
+	<s:Group buttonMode="true">
+		<!--灰色底图-->
+		<s:Image source="{car_num}" visible="{!isShow}"/>
+		<!--变换彩图-->
+		<s:Image id="targetCar"  visible="{isShow}"/>
+		<!--标签-->
+		<mx:Label y="60" width="62" id="mark" text="{markinfo}" textAlign="center"
+				 color="{isShow?car_source[souceIndex]:0x999999}" fontFamily="微软雅黑" fontSize="14" fontWeight="bold" fontStyle="normal"/>
+		
+	</s:Group>
+	
+	
+</s:Group>

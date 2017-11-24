@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.single.PublicDataClass;
+			
+			import mx.events.FlexEvent;
+			
+			import org.osmf.events.TimeEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/0.png")]
+			private var pic_0:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/1.png")]
+			private var pic_1:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/2.png")]
+			private var pic_2:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/3.png")]
+			private var pic_3:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/4.png")]
+			private var pic_4:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/5.png")]
+			private var pic_5:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/6.png")]
+			private var pic_6:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/7.png")]
+			private var pic_7:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/8.png")]
+			private var pic_8:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/9.png")]
+			private var pic_9:Class;
+			
+			
+			private var _isVisible:Boolean = true;
+			
+			[Bindable]
+			public function get isVisible():Boolean
+			{
+				return _isVisible;
+			}
+			
+			public function set isVisible(value:Boolean):void
+			{
+				_isVisible = value;
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			private var Bits_0:int;
+			private var Bits_1:int;
+			private var Bits_2:int;
+			private var Bits_3:int;
+			private var Bits_4:int;
+			
+			private var timer:Timer;
+			public function init(secondNum:int):void
+			{
+				if(secondNum < 0)
+				{
+					return;
+				}
+				if(secondNum == 0)
+				{
+					timer = new Timer(1000,secondNum+1);
+				}else{
+					timer = new Timer(1000,secondNum);
+				}
+				
+				//初始化数据；
+				setData(secondNum)
+				
+				//				timer = new Timer(1000,secondNum+1);
+				timer.addEventListener(TimerEvent.TIMER,timerHandler);
+				timer.addEventListener(TimerEvent.TIMER_COMPLETE,timerCompleteHandler);
+				timer.start();
+			}
+			
+			private function setData(secondNum:int):void
+			{
+				var arr:Array = secondNum.toString().split("");
+				arr = arr.reverse();
+				
+				for(var i:int = 0; i< arr.length; i++)
+				{
+					this["Bits_" + i] = arr[i] ;
+					
+					this["img_" + i].source = this["pic_" + arr[i]];
+					
+					this["img_" + i + "_group"].visible = true;
+					this["img_" + i + "_group"].includeInLayout = true;
+				}
+			}
+			
+			private var Num:int = 0;
+			private function timerHandler(e:TimerEvent):void
+			{
+				Num = 0;
+				for(var i:int = 0; i< 5; i++)
+				{
+					if(this["img_" + i + "_group"].visible == true)
+					{
+						Num++;
+					}
+				}
+				if(Num == 0 || Num == 1 || Num == 2)
+				{
+					borde.width = 130;
+				}
+				else if(Num == 3 || Num == 4 || Num == 5)
+				{
+					borde.width = 40 + Num*30;
+				}
+				
+				Bits_0 -= 1;
+				if(Bits_0 < 0)
+				{
+					Bits_0 = 9;
+					Bits_1--;
+				}
+				if(Bits_1 < 0)
+				{
+					Bits_1 = 9;
+					Bits_2--;
+				}
+				if(Bits_2 < 0)
+				{
+					Bits_2 = 9;
+					Bits_3--;
+				}
+				if(Bits_3 < 0)
+				{
+					Bits_3 = 9;
+					Bits_4--;
+				}
+				if(Bits_4 < 0)
+				{
+					return;
+				}
+				
+				
+				if(Bits_4 == 0)
+				{
+					img_4_group.visible = false;
+					img_4_group.includeInLayout = false;
+				}
+				if(Bits_4 == 0 && Bits_3 == 0)
+				{
+					img_3_group.visible = false;
+					img_3_group.includeInLayout = false;
+				}
+				if(Bits_4 == 0 && Bits_3 == 0 && Bits_2 == 0)
+				{
+					img_2_group.visible = false;
+					img_2_group.includeInLayout = false;
+				}
+				if(Bits_4 == 0 && Bits_3 == 0 && Bits_2 == 0 && Bits_1 == 0)
+				{
+					img_1_group.visible = false;
+					img_1_group.includeInLayout = false;
+				}
+				if(Bits_4 == 0 && Bits_3 == 0 && Bits_2 == 0 && Bits_1 == 0 && Bits_0 == 0)
+				{
+					img_0_group.visible = false;
+					img_0_group.includeInLayout = false;
+				}
+				
+				for(var i:int = 0; i< 5; i++)
+				{
+					this["img_" + i].source = this["pic_" + this['Bits_' + i]];
+				}
+			}
+			
+			private function timerCompleteHandler(e:TimerEvent):void
+			{
+				timer.removeEventListener(TimerEvent.TIMER,timerHandler);
+				timer.removeEventListener(TimerEvent.TIMER_COMPLETE,timerCompleteHandler);
+				timer = null;
+				
+				dispatchEvent(new Event("CountdownCompleteEvent",true));
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<s:HGroup width="190" height="96" verticalAlign="middle" horizontalAlign="center" visible="{isVisible}">
+		<s:Rect  width="130" height="96" id="borde">
+			<s:stroke> 
+				<s:SolidColorStroke color="0xa1cc4a" weight="2"/> 
+			</s:stroke>
+		</s:Rect>
+	</s:HGroup>
+	
+	<s:HGroup id="group" width="190" height="96" verticalAlign="middle" horizontalAlign="center" gap="0">
+		<s:HGroup horizontalAlign="center" width="30" id="img_4_group" visible="false" includeInLayout="false">
+			<s:Image  id="img_4" />
+		</s:HGroup>
+		<s:HGroup horizontalAlign="center" width="30" id="img_3_group"  visible="false" includeInLayout="false">
+			<s:Image  id="img_3" />
+		</s:HGroup>
+		<s:HGroup horizontalAlign="center" width="30" id="img_2_group"  visible="false" includeInLayout="false">
+			<s:Image  id="img_2" />
+		</s:HGroup>
+		<s:HGroup horizontalAlign="center" width="30" id="img_1_group"  visible="false" includeInLayout="false">
+			<s:Image  id="img_1" />
+		</s:HGroup>
+		<s:HGroup horizontalAlign="center" width="30" id="img_0_group"  visible="false" includeInLayout="false">
+			<s:Image  id="img_0" />
+		</s:HGroup>
+	</s:HGroup>
+	
+	
+</s:Group>

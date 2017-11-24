@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 width="106" height="300"
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/big.png")]
+			private var big:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/samll.png")]
+			private var samll:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/single.png")]
+			private var single:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/double.png")]
+			private var double:Class;
+			
+			
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/0.png")]
+			private var img_0:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/1.png")]
+			private var img_1:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/2.png")]
+			private var img_2:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/3.png")]
+			private var img_3:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/4.png")]
+			private var img_4:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/5.png")]
+			private var img_5:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/6.png")]
+			private var img_6:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/7.png")]
+			private var img_7:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/8.png")]
+			private var img_8:Class;
+			[Bindable]
+			[Embed(source="css/img/tjssc/numbers/9.png")]
+			private var img_9:Class;
+			
+			private var _position:int = 1;
+			private var _isStop:Boolean= false;
+			
+			[Bindable]
+			public function get position():int
+			{
+				return _position;
+			}
+			
+			public function set position(value:int):void
+			{
+				_position = value;
+			}
+			
+			[Bindable]
+			public function get isStop():Boolean
+			{
+				return _isStop;
+			}
+			
+			public function set isStop(value:Boolean):void
+			{
+				_isStop = value;
+			}
+			
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				//				moveEffect.play();
+			}
+			
+			//初始化；
+			public function init():void
+			{
+				isStop = false;
+				//初始位置；
+				number_group.x = 0;
+				number_group.y = -1700;
+				//设置  滚动可见；
+				number_group.visible = true;
+				//设置  结果不可见；
+				number_result_group.visible = false;
+				//启动滚动；
+				moveEffect.play();
+			}
+			
+			
+			//滚动指定位置；
+			private var positionArr:Array = ["-1800","-1700","-1600","-1500","-1400","-1300","-1200","-1100","-1000","-900",];
+			protected function move1_effectEndHandler(event:EffectEvent):void
+			{
+				if(isStop && number_group.y == positionArr[position])
+				{
+					moveEffect.stop();
+					//设置  滚动不可见；
+					number_group.visible = false;
+					//设置  结果可见；
+					number_result_group.visible = true;
+					//设置  结果属性；
+					set_Result_Property();
+					//播放属性效果；
+					changeLarger_effect_1.play();
+					changeLarger_effect_2.play();
+					glow_effect.play();
+				}
+				else
+				{
+					if(number_group.y >= 0)
+					{
+						number_group.y = -1900;
+					}
+					moveEffect.play();
+				}
+			}
+			
+			//设置  结果属性；
+			private var showArr:Array;//临时转换数组；
+			private function set_Result_Property():void
+			{
+				showArr = new Array();
+				if(position == 0)
+				{
+					showArr = [9,0,1];
+				}
+				else if(position == 9)
+				{
+					showArr = [8,9,0];
+				}
+				else
+				{
+					showArr = [(position-1),position,(position+1)];
+				}
+				
+				big_samll_img.source = this["img_" + showArr[0]];
+				result_img.source = this["img_" + showArr[1]];
+				single_double_img.source = this["img_" + showArr[2]];
+			}
+			
+			
+			protected function changeLarger_effect_1_EndHandler(event:EffectEvent):void
+			{
+				big_samll_img.source = int(showArr[1])>4?big:samll;
+				changeSmall_effect_1.play();
+			}
+			protected function changeLarger_effect_2_EndHandler(event:EffectEvent):void
+			{
+				single_double_img.source = int(showArr[1])%2==0?double:single;
+				changeSmall_effect_2.play();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<s:Move id="moveEffect" yBy="50" duration="50" target="{number_group}" 
+				effectEnd="move1_effectEndHandler(event)" />
+		
+		<s:Scale duration="300" scaleXFrom="1" scaleXTo="0" autoCenterTransform="true" target="{big_samll_img}" id="changeLarger_effect_1"
+				 effectEnd="changeLarger_effect_1_EndHandler(event)"  startDelay="1000" />
+		<s:Scale duration="300" scaleXFrom="0" scaleXTo="1" autoCenterTransform="true" target="{big_samll_img}" id="changeSmall_effect_1"/>
+		
+		<s:Scale duration="300" scaleXFrom="1" scaleXTo="0" autoCenterTransform="true" target="{single_double_img}" id="changeLarger_effect_2"
+				 effectEnd="changeLarger_effect_2_EndHandler(event)"  startDelay="1000" />
+		<s:Scale duration="300" scaleXFrom="0" scaleXTo="1" autoCenterTransform="true" target="{single_double_img}" id="changeSmall_effect_2"/>
+		
+		<mx:Glow blurXFrom="0" blurXTo="50" 
+				 blurYFrom="0" blurYTo="50" color="#000000" repeatCount="0" startDelay="1600"
+				 duration="1000"  target="{result_img}" id="glow_effect" />
+		
+	</fx:Declarations>
+	
+	<s:VGroup x="0" y="-1700" gap="0" id="number_group">
+		
+		<!-- 排序  0~9 -->
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_9}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_8}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_7}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_6}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_5}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_4}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_3}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_2}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_1}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_0}" />
+		</s:HGroup>
+		<!-- 排序  0~9 -->
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_9}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_8}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_7}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_6}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_5}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_4}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_3}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_2}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_1}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_0}" />
+		</s:HGroup><!-- 排序  0~9 -->
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_9}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_8}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_7}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_6}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_5}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_4}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_3}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_2}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_1}" />
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image source="{img_0}" />
+		</s:HGroup>
+	</s:VGroup>
+	
+	
+	<s:VGroup gap="0" id="number_result_group">
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image  id="big_samll_img"/>
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image  id="result_img"/>
+		</s:HGroup>
+		<s:HGroup width="106" height="100" horizontalAlign="center" verticalAlign="middle" >
+			<s:Image  id="single_double_img"/>
+		</s:HGroup>
+	</s:VGroup>
+	
+</s:Group>

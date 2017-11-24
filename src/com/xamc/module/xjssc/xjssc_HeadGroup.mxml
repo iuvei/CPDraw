@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/xjssc/head_numbers/00.png")]
+			private var img_0:Class;
+			[Bindable]
+			[Embed(source="css/img/xjssc/head_numbers/11.png")]
+			private var img_1:Class;
+			[Bindable]
+			[Embed(source="css/img/xjssc/head_numbers/22.png")]
+			private var img_2:Class;
+			[Bindable]
+			[Embed(source="css/img/xjssc/head_numbers/33.png")]
+			private var img_3:Class;
+			[Bindable]
+			[Embed(source="css/img/xjssc/head_numbers/44.png")]
+			private var img_4:Class;
+			[Bindable]
+			[Embed(source="css/img/xjssc/head_numbers/55.png")]
+			private var img_5:Class;
+			[Bindable]
+			[Embed(source="css/img/xjssc/head_numbers/66.png")]
+			private var img_6:Class;
+			[Bindable]
+			[Embed(source="css/img/xjssc/head_numbers/77.png")]
+			private var img_7:Class;
+			[Bindable]
+			[Embed(source="css/img/xjssc/head_numbers/88.png")]
+			private var img_8:Class;
+			[Bindable]
+			[Embed(source="css/img/xjssc/head_numbers/99.png")]
+			private var img_9:Class;
+			
+			private var result_arr:Array = new Array();
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			//初始化；
+			public function init(arr:Array):void
+			{
+				result_arr = arr;
+				
+				for(var i:int=1; i<6; i++)
+				{
+					this["changeLarger_effect_" + i].play();
+				}
+			}
+			
+			protected function changeLarger_effect_1_EndHandler(event:EffectEvent):void
+			{
+				pic_1.source = this["img_" + result_arr[0]];
+				changeSmall_effect_1.play();
+			}
+			protected function changeLarger_effect_2_EndHandler(event:EffectEvent):void
+			{
+				pic_2.source = this["img_" + result_arr[1]];
+				changeSmall_effect_2.play();
+			}
+			protected function changeLarger_effect_3_EndHandler(event:EffectEvent):void
+			{
+				pic_3.source = this["img_" + result_arr[2]];
+				changeSmall_effect_3.play();
+			}
+			protected function changeLarger_effect_4_EndHandler(event:EffectEvent):void
+			{
+				pic_4.source = this["img_" + result_arr[3]];
+				changeSmall_effect_4.play();
+			}
+			protected function changeLarger_effect_5_EndHandler(event:EffectEvent):void
+			{
+				pic_5.source = this["img_" + result_arr[4]];
+				changeSmall_effect_5.play();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		
+		<s:Scale duration="300" scaleXFrom="1" scaleXTo="0" scaleYFrom="1" scaleYTo="0" autoCenterTransform="true" target="{pic_1}" id="changeLarger_effect_1"
+				 effectEnd="changeLarger_effect_1_EndHandler(event)" />
+		<s:Scale duration="300" scaleXFrom="0" scaleXTo="1" scaleYFrom="0" scaleYTo="1"  autoCenterTransform="true" target="{pic_1}" id="changeSmall_effect_1"/>
+		
+		<s:Scale duration="300" scaleXFrom="1" scaleXTo="0" scaleYFrom="1" scaleYTo="0"  autoCenterTransform="true" target="{pic_2}" id="changeLarger_effect_2"
+				 effectEnd="changeLarger_effect_2_EndHandler(event)" startDelay="600"/>
+		<s:Scale duration="300" scaleXFrom="0" scaleXTo="1" scaleYFrom="0" scaleYTo="1"  autoCenterTransform="true" target="{pic_2}" id="changeSmall_effect_2"/>
+		
+		<s:Scale duration="300" scaleXFrom="1" scaleXTo="0" scaleYFrom="1" scaleYTo="0"  autoCenterTransform="true" target="{pic_3}" id="changeLarger_effect_3"
+				 effectEnd="changeLarger_effect_3_EndHandler(event)" startDelay="1200"/>
+		<s:Scale duration="300" scaleXFrom="0" scaleXTo="1" scaleYFrom="0" scaleYTo="1"  autoCenterTransform="true" target="{pic_3}" id="changeSmall_effect_3"/>
+		
+		<s:Scale duration="300" scaleXFrom="1" scaleXTo="0" scaleYFrom="1" scaleYTo="0"  autoCenterTransform="true" target="{pic_4}" id="changeLarger_effect_4"
+				 effectEnd="changeLarger_effect_4_EndHandler(event)" startDelay="1800"/>
+		<s:Scale duration="300" scaleXFrom="0" scaleXTo="1" scaleYFrom="0" scaleYTo="1"  autoCenterTransform="true" target="{pic_4}" id="changeSmall_effect_4"/>
+		
+		<s:Scale duration="300" scaleXFrom="1" scaleXTo="0" scaleYFrom="1" scaleYTo="0"  autoCenterTransform="true" target="{pic_5}" id="changeLarger_effect_5"
+				 effectEnd="changeLarger_effect_5_EndHandler(event)" startDelay="2400"/>
+		<s:Scale duration="300" scaleXFrom="0" scaleXTo="1" scaleYFrom="0" scaleYTo="1"  autoCenterTransform="true" target="{pic_5}" id="changeSmall_effect_5"/>
+		
+		
+	</fx:Declarations>
+	
+	<s:Group>
+		<s:Image x="0" source="{img_0}" id="pic_1"/>
+		<s:Image x="78" source="{img_0}" id="pic_2"/>
+		<s:Image x="156" source="{img_0}" id="pic_3"/>
+		<s:Image x="234" source="{img_0}" id="pic_4"/>
+		<s:Image x="312" source="{img_0}" id="pic_5"/>
+	</s:Group>
+	
+</s:Group>

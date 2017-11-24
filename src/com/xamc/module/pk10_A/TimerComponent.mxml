@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.single.PublicDataClass;
+			
+			import mx.events.FlexEvent;
+			
+			import org.osmf.events.TimeEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/0.png")]
+			private var pic_0:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/1.png")]
+			private var pic_1:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/2.png")]
+			private var pic_2:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/3.png")]
+			private var pic_3:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/4.png")]
+			private var pic_4:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/5.png")]
+			private var pic_5:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/6.png")]
+			private var pic_6:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/7.png")]
+			private var pic_7:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/8.png")]
+			private var pic_8:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10_A/timerpic/9.png")]
+			private var pic_9:Class;
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+			}
+			
+			private var qian:int;
+			private var bai:int;
+			private var ge:int;
+			
+			private var timer:Timer;
+			public function init(secondNum:int):void
+			{
+				if(secondNum < 0)
+				{
+					img_3.source = null;
+					img_2.source = null;
+					img_1.source = null;
+					
+					return;
+				}else{
+					setData(secondNum);
+				}
+				
+				//初始化数据；
+				setData(secondNum)
+				
+				timer = new Timer(1000,secondNum);
+				timer.addEventListener(TimerEvent.TIMER,timerHandler);
+				timer.addEventListener(TimerEvent.TIMER_COMPLETE,timerCompleteHandler);
+				timer.start();
+			}
+			
+			private function setData(secondNum:int):void
+			{
+				if(secondNum.toString().split("").length == 3)
+				{
+					qian = secondNum.toString().split("")[0];
+					bai = secondNum.toString().split("")[1];
+					ge = secondNum.toString().split("")[2];
+					
+					img_3.source = this["pic_" + qian];
+					img_2.source = this["pic_" + bai];
+					img_1.source = this["pic_" + ge];
+				}
+				else if(secondNum.toString().split("").length == 2)
+				{
+					bai = secondNum.toString().split("")[0];
+					ge = secondNum.toString().split("")[1];
+					
+					img_2.source = this["pic_" + bai];
+					img_1.source = this["pic_" + ge];
+				}
+				else if(secondNum.toString().split("").length == 1)
+				{
+					ge = secondNum.toString().split("")[0];
+					
+					img_1.source = this["pic_" + ge];
+					
+				}
+				
+				if(qian == 0)
+				{
+					img_3_group.visible = false;
+					img_3_group.includeInLayout = false;
+				}
+				if(qian == 0 && bai == 0)
+				{
+					img_2_group.visible = false;
+					img_2_group.includeInLayout = false;
+				}
+			}
+			
+			private function timerHandler(e:TimerEvent):void
+			{
+				ge -= 1;
+				if(ge < 0)
+				{
+					ge = 9;
+					bai--;
+				}
+				if(bai < 0)
+				{
+					bai = 9;
+					qian--;
+				}
+				if(qian < 0)
+				{
+					
+				}
+				
+				
+				if(qian == 0)
+				{
+					img_3_group.visible = false;
+					img_3_group.includeInLayout = false;
+				}
+				if(qian == 0 && bai == 0)
+				{
+					img_2_group.visible = false;
+					img_2_group.includeInLayout = false;
+				}
+				
+				img_3.source = this["pic_" + qian];
+				img_2.source = this["pic_" + bai];
+				img_1.source = this["pic_" + ge];
+			}
+			
+			private function timerCompleteHandler(e:TimerEvent):void
+			{
+				timer.removeEventListener(TimerEvent.TIMER,timerHandler);
+				timer.removeEventListener(TimerEvent.TIMER_COMPLETE,timerCompleteHandler);
+				timer = null;
+				
+				dispatchEvent(new Event("CountdownCompleteEvent",true));
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<s:HGroup width="90" horizontalAlign="center" gap="0">
+		<s:HGroup horizontalAlign="center" width="30" id="img_3_group">
+			<s:Image  id="img_3" />
+		</s:HGroup>
+		<s:HGroup horizontalAlign="center" width="30" id="img_2_group">
+			<s:Image  id="img_2" />
+		</s:HGroup>
+		<s:HGroup horizontalAlign="center" width="30" id="img_1_group">
+			<s:Image  id="img_1" />
+		</s:HGroup>
+	</s:HGroup>
+	
+	
+</s:Group>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/ico/ico_1.png")]
+			private var ico_1:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/ico/ico_2.png")]
+			private var ico_2:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/ico/ico_3.png")]
+			private var ico_3:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/ico/ico_4.png")]
+			private var ico_4:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/ico/ico_5.png")]
+			private var ico_5:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/ico/ico_6.png")]
+			private var ico_6:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/ico/ico_7.png")]
+			private var ico_7:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/ico/ico_8.png")]
+			private var ico_8:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/ico/ico_9.png")]
+			private var ico_9:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/ico/ico_10.png")]
+			private var ico_10:Class; 
+			
+			
+			private var _isShow:int;
+			
+			[Bindable]
+			public function get isShow():int
+			{
+				return _isShow;
+			}
+			
+			public function set isShow(value:int):void
+			{
+				_isShow = value;
+				init(_isShow);
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				init(0);
+			}
+			
+			private function init(val:int):void
+			{
+				for(var i:int=1; i<11; i++)
+				{
+					this["num_" + i].visible = false;
+				}
+				
+				if(val < 1)
+				{
+					return;
+				}else{
+					this["num_" + val].visible = true;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<s:Image source="{ico_1}" id="num_1" visible="{isShow}" smooth="true"/>
+	<s:Image source="{ico_2}" id="num_2"  smooth="true"/>
+	<s:Image source="{ico_3}" id="num_3"  smooth="true"/>
+	<s:Image source="{ico_4}" id="num_4"  smooth="true"/>
+	<s:Image source="{ico_5}" id="num_5"  smooth="true"/>
+	<s:Image source="{ico_6}" id="num_6"  smooth="true"/>
+	<s:Image source="{ico_7}" id="num_7"  smooth="true"/>
+	<s:Image source="{ico_8}" id="num_8"  smooth="true"/>
+	<s:Image source="{ico_9}" id="num_9"  smooth="true"/>
+	<s:Image source="{ico_10}" id="num_10"  smooth="true"/>
+	
+	
+</s:Group>

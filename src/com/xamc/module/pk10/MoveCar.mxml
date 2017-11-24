@@ -1,0 +1,662 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="980" height="630"
+		 xmlns:components="components.*"
+		 creationComplete="group1_creationCompleteHandler(event)" xmlns:pk10="com.xamc.module.pk10.*"
+		 >
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.event.CustomEvent;
+			import com.xamc.manager.TimerManager;
+			import com.xamc.service.ServerTool;
+			import com.xamc.service.ServerToolImpl;
+			import com.xamc.single.CurrentBusinessInfo;
+			import com.xamc.single.PublicDataClass;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.core.SoundAsset;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import org.osmf.events.TimeEvent;
+			
+			private var FrameRate:Number = 25;//帧率
+			
+			private var sort_Arr:ArrayCollection
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/moveCar_bg.png")]
+			private var moveCar_bg:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/Lane_bg1.jpg")]
+			private var Lane_bg1:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/start_line.png")]
+			private var start_line_bg:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/btn_bg.png")]
+			private var btn_bg:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/startCountdownPic/Countdown_3.png")]
+			private var Countdown_3_ico:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/startCountdownPic/Countdown_2.png")]
+			private var Countdown_2_ico:Class;
+			[Bindable]
+			[Embed(source="css/img/pk10/startCountdownPic/Countdown_1.png")]
+			private var Countdown_1_ico:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/daojishi_bg.png")]
+			private var daojishi_bg:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/speak_open.png")]
+			private var speak_open:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/pk10/speak_close.png")]
+			private var speak_close:Class;
+			
+			
+			private var _openSoundBoolean:Boolean = true;
+			
+			
+			[Bindable]
+			public function get openSoundBoolean():Boolean
+			{
+				return _openSoundBoolean;
+			}
+
+			public function set openSoundBoolean(value:Boolean):void
+			{
+				_openSoundBoolean = value;
+			}
+
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// 请求数据
+				PublicDataClass.RequestData_And_SaveData(init,10);
+			}
+			
+			private function init():void
+			{
+				addEventListener("MoveEndEvent",MoveEndEventHandler);
+				addEventListener("AllMoveEndEvent",AllMoveEndEventHandler);
+				time_component.addEventListener("CountdownCompleteEvent",CountdownCompleteEventHandler);
+				//创建car 
+				init_car();
+				
+				//根据  base_game_state    0没有开奖，1正在开奖；
+				
+				if(PublicDataClass.base_game_state == 0 && int(PublicDataClass.base_nowResultInfo.residualTime) > 0)
+				{
+					// 0没有开奖  显示倒计时；
+					time_component.init( PublicDataClass.base_nowResultInfo.residualTime);
+				}
+				else{
+					//赛车启动    期号、时间、 返回数据分析页面按钮  都消失；
+					nextIusseTime_group.visible = false;
+					goback_group.visible = false;
+					daojishi_group.visible = false;
+					NowLottery.visible = true;
+					
+					//一旦开奖，左边的期号变换为正在开奖的期号；
+					changeIusse.text = PublicDataClass.base_nowResultInfo.issueNumber;
+					
+					// 1正在开奖  显示 3、2、1  直接开奖；
+					//倒计时结束；
+					Countdown_3_effect.play();
+					//播放声音；
+					if(openSoundBoolean)
+					{
+						SpeedChannel_1 = Speed_1.play();
+					}
+				}
+			}
+			//倒计时 走完， 显示 3、2、1  直接开奖
+			private function CountdownCompleteEventHandler(e:Event):void
+			{
+				//一旦开奖，左边的期号变换为正在开奖的期号；
+				changeIusse.text = PublicDataClass.base_nowResultInfo.issueNumber;
+				
+				//赛车启动    期号、时间、 返回数据分析页面按钮  都消失；
+				nextIusseTime_group.visible = false;
+				goback_group.visible = false;
+				daojishi_group.visible = false;
+				NowLottery.visible = true;
+				
+				//倒计时结束；
+				Countdown_3_effect.play();
+				//播放声音；
+				if(openSoundBoolean)
+				{
+					SpeedChannel_1 = Speed_1.play();
+				}
+			}
+			
+			//创建bg 
+			private function init_bg():void
+			{
+				bg_group.addEventListener(Event.ENTER_FRAME,enterframeHandler);
+			}
+			private function enterframeHandler(event:Event):void
+			{
+				if(bg_group.x < -FrameRate)
+				{
+					bg_group.x += FrameRate;
+				}else{
+					bg_group.x = -2632;
+				}
+			}
+			//创建car
+			private function init_car():void
+			{
+				//-----------------------------------创建car   ----------------------------------//
+				var position_x:int = 750;
+				var position_y:int = 388;
+				
+				var position_x_gap:int = 0;
+				var position_y_gap:int = -34;
+				car_group.removeAllElements();
+				for(var j:int = 0;j<10;j++)
+				{
+					var car:Car = new Car();
+					car.scaleX = 0.9;
+					car.scaleY = 0.9;
+					car_group.addElement(car);
+					car.x = position_x + position_x_gap*j;
+					car.y = position_y + position_y_gap*j;
+				}
+				
+				//----------------------------------- 创建数据  ----------------------------------//
+				//  ax:Number = 0.5;//加速度
+				//  vx:Number = 0;//速度
+				
+				//  v1:Number = 25;//最大速度（0~v1）设为定值
+				//  v2:Number = -15;//随机速度（v2）
+				//  v3:Number = -25;//最小速度（0~v3）
+				//  sameSpeed_num:int = 5;//匀速的时间次数；
+				
+				var arr:Array = [   
+					{mark:"1",ax:0.1,vx:0,v1:8,v2:5,v3:-8,sameSpeed_num_jia:1,sameSpeed_num_jian:2},
+					{mark:"2",ax:0.2,vx:0,v1:15,v2:15,v3:-15,sameSpeed_num_jia:1,sameSpeed_num_jian:1},
+					{mark:"3",ax:0.4,vx:1,v1:15,v2:7,v3:-15,sameSpeed_num_jia:1,sameSpeed_num_jian:2},
+					
+					{mark:"4",ax:0.3,vx:0.4,v1:17,v2:7,v3:-17,sameSpeed_num_jia:1,sameSpeed_num_jian:1},
+					{mark:"5",ax:0.2,vx:0.1,v1:13,v2:8,v3:-13,sameSpeed_num_jia:1,sameSpeed_num_jian:3},
+					{mark:"6",ax:0.2,vx:0.3,v1:16,v2:9,v3:-16,sameSpeed_num_jia:1,sameSpeed_num_jian:2},
+					
+					{mark:"7",ax:0.3,vx:0.3,v1:12,v2:4,v3:-12,sameSpeed_num_jia:1,sameSpeed_num_jian:2},
+					{mark:"8",ax:0.2,vx:0.2,v1:14,v2:8,v3:-14,sameSpeed_num_jia:2,sameSpeed_num_jian:1},
+					{mark:"9",ax:0.2,vx:0.2,v1:12,v2:8,v3:-12,sameSpeed_num_jia:1,sameSpeed_num_jian:2},
+					{mark:"10",ax:0.2,vx:0.3,v1:16,v2:8,v3:-16,sameSpeed_num_jia:1,sameSpeed_num_jian:2},
+				];
+				
+				//var sort_Arr_1:Array = [0,1,2,3,4,5,6,7,8,9];
+				//var sort_Arr_2:Array = [1,2,3,4,5,6,7,8,9,0];
+				//var sort_Arr_3:Array = [2,3,4,5,6,7,8,9,0,1];
+				//	..........         ....................
+				//var sort_Arr_3:Array = [9,0,1,2,3,4,5,6,7,8];		
+				
+				var init_arr:Array = [0,1,2,3,4,5,6,7,8,9];
+				
+				//混淆数组，按需排列；
+				sort_Arr = new ArrayCollection();
+				sort_Arr.addItem(arr);
+				
+				for(var i:int=0; i<10; i++)
+				{
+					var new_sort_arr:Array = sort_Arr[i].slice();
+					var obj:Object = new Object();
+					obj = new_sort_arr[0];
+					var now_arr:Array = new_sort_arr;
+					now_arr.splice(0,1);
+					now_arr.push(obj);
+					sort_Arr.addItem(now_arr);
+				}
+				for(var i:int = 0;i<sort_Arr[0].length;i++)
+				{
+					(car_group.getChildAt(i) as Car).mark = (i+1).toString();
+					(car_group.getChildAt(i) as Car).ax = sort_Arr[0][i].ax;
+					(car_group.getChildAt(i) as Car).vx = sort_Arr[0][i].vx;
+					(car_group.getChildAt(i) as Car).v1 = sort_Arr[0][i].v1;
+					(car_group.getChildAt(i) as Car).v2 = sort_Arr[0][i].v2;
+					(car_group.getChildAt(i) as Car).v3 = sort_Arr[0][i].v3;
+					(car_group.getChildAt(i) as Car).sameSpeed_num_jia = sort_Arr[0][i].sameSpeed_num_jia;
+					(car_group.getChildAt(i) as Car).sameSpeed_num_jian = sort_Arr[0][i].sameSpeed_num_jian;
+					
+					(car_group.getChildAt(i) as Car).getDataArr = sort_Arr[i];
+				}
+			}
+			
+			protected function star_clickHandler(event:MouseEvent):void
+			{
+				//倒计时结束；
+				Countdown_3_effect.play();
+			}
+			
+//			var result_arr:Array = [1,5,3,8,6,4,7,9,2,10];
+			private var result_arr:Array = PublicDataClass.base_resultArr.slice();
+			protected function stop_clickHandler(event:MouseEvent):void
+			{
+				for(var i:int = 0;i<10;i++)
+				{
+					for(var m:int = 0;m<10;m++)
+					{
+						if(i+1 == result_arr[m])
+						{
+							(car_group.getChildAt(i) as Car).result = m;
+						}
+					}
+					(car_group.getChildAt(i) as Car).end_mark = true;
+				}
+			}
+			
+			//根据结果排序出场
+			private var endSaveArr:Array = new Array();
+			private function MoveEndEventHandler(e:Event):void
+			{
+				//				trace((e.target as Car).mark + "____" + car_group.getChildAt(int((e.target as Car).mark)-1).x);
+				endSaveArr.push((e.target as Car).mark);
+				if(endSaveArr.length == 10)
+				{
+					start_line.x = -200;
+					start_line.visible = true;
+					start_line.addEventListener(Event.ENTER_FRAME,start_line_enterframeHandler);
+				}
+			}
+			private var overline_arr:Array =[0.3,0,30];
+			private function start_line_enterframeHandler(event:Event):void
+			{
+				if(start_line.x < 100)
+				{
+					start_line.x += FrameRate;
+				}else{
+					bg_group.removeEventListener(Event.ENTER_FRAME,enterframeHandler);
+					start_line.removeEventListener(Event.ENTER_FRAME,start_line_enterframeHandler);
+					//继续朝前走；
+					for(var j:int = 0;j<10;j++)
+					{
+						(car_group.getChildAt(j) as Car).end_v1 = overline_arr[2];
+						(car_group.getChildAt(j) as Car).end_Overline_Handler();
+					}
+					
+					//停止检测位置，计时器暂停；
+					time_position_StopEventHandler();
+				}
+			}
+			
+			//前三名  冠亚季军页面；
+			var saveNumArr:Array = new Array();
+			private function AllMoveEndEventHandler(e:Event):void
+			{
+				var objTarget:Object = (e.target as Car).mark;
+				saveNumArr.push(objTarget);
+				
+				if(saveNumArr.length == 10)
+				{
+					//停止播放声音；
+					SpeedChannel_3.stop();
+					
+					//前三名  冠亚季军页面；
+					dispatchEvent(new Event("GoToOneTwoThreeEvent",true));
+					
+					//清空group2  页面；  
+					saveNumArr = new Array();
+					car_group.removeAllElements();
+					for(var i:int = 0;i<car_group.numElements;i++)
+					{
+						car_group.removeChildAt(i);
+					}
+				}
+			}
+			
+			//检测位置
+			private var time_position:Timer;
+			private function Position():void
+			{
+				time_position = new Timer(200);
+				time_position.addEventListener(TimerEvent.TIMER,timerEventHandler);
+				time_position.start();
+			}
+			private function timerEventHandler(e:TimerEvent):void
+			{
+				var obj:Object = new Object();
+				var jieguoArr:Array = new Array();
+				for(var i:int = 0;i<car_group.numChildren;i++)
+				{
+					//保存当前所有对象的位置信息；
+					obj = new Object();
+					obj.name = "car_" + (car_group.getElementAt(i) as Car).mark;
+					obj.position = ((car_group.getElementAt(i) as Car).car_1).x ;
+					jieguoArr.push(obj);
+				}
+				//trace(jieguoArr.length)
+				//将数组按位置排序；
+				jieguoArr.sortOn("position", Array.NUMERIC | Array.DESCENDING);
+				//将数组反转；（上一步排序之后是按照由小到大排列的，这里需要大到小）
+				jieguoArr.reverse();
+				
+				//按位置提取车号建成新的数组；
+				var finallyArr:Array = new Array();
+				for(var j:int = 0;j<jieguoArr.length;j++)
+				{
+					finallyArr.push( ((jieguoArr[j].name) as String).split("_")[1]   );
+				}
+				headGroup.init_ico(finallyArr);
+			}
+			//停止检测位置，计时器暂停；
+			private function time_position_StopEventHandler():void
+			{
+				time_position.stop();
+				time_position.removeEventListener(TimerEvent.TIMER,timerEventHandler);
+				time_position = null;
+			}
+			
+			
+			
+			protected function goback_clickHandler(event:MouseEvent):void
+			{
+				dispatchEvent(new Event("GoToDataAnalysisEvent",true));
+			}
+			protected function goback_mouseOverHandler(event:MouseEvent):void
+			{
+				goback.setStyle("color","#000000");
+			}
+			protected function goback_mouseOutHandler(event:MouseEvent):void
+			{
+				goback.setStyle("color","#FFFFFF");
+			}
+			
+			protected function Countdown_3_effect_effectEndHandler(event:EffectEvent):void
+			{
+				Countdown_2_effect.play();
+			}
+			protected function Countdown_2_effect_effectEndHandler(event:EffectEvent):void
+			{
+				Countdown_1_effect.play();
+			}
+			protected function Countdown_1_effect_effectEndHandler(event:EffectEvent):void
+			{
+				//倒计时结束，开始运动；
+				start_move();
+			}
+			
+			private function start_move():void
+			{
+				//播放声音；
+				if(openSoundBoolean)
+				{
+					SpeedChannel_2 = Speed_2.play();
+					SpeedChannel_3 = Speed_3.play(0,9999);
+				}else{
+					SpeedChannel_3 = Speed_3.play(0,9999);
+					SpeedChannel_3.stop();
+				}
+				
+				init_bg()
+				for(var j:int = 0;j<10;j++)
+				{
+					(car_group.getChildAt(j) as Car).carMove();
+					(car_group.getChildAt(j) as Car).rotate_start();
+				}
+				start_line.visible = false;
+				//检测位置
+				Position();
+				
+				//心跳   定时取开奖结果；
+				HeartbeatTime = new Timer(3000);
+				HeartbeatTime.addEventListener(TimerEvent.TIMER,onTime);
+				HeartbeatTime.start();
+			}
+			
+			private var HeartbeatTime:Timer ;
+			
+			private function onTime(e:TimerEvent):void
+			{
+				var server:ServerTool = new ServerToolImpl();
+				var params:Object = new Object();
+				params.dateString = "";
+				params.type = 2;
+				params.lotteryId = CurrentBusinessInfo.nowLottery;
+				server.getPK10shipinData(params,resultHandler,faultHandler);
+			}
+			
+			private function faultHandler(e:FaultEvent):void
+			{
+				trace("请求服务器异常！！！");
+			}
+			private function resultHandler(e:ResultEvent):void
+			{
+				trace(e.result.toString());
+				var obj:Object = JSON.parse(e.result.toString());
+				
+				if(  int(PublicDataClass.saveIssueNumber) < int(obj.nowResultIssus.issueNumber) ) //说明此时开奖结果已出；
+				{
+					//保存最新数据；
+					saveData(obj);
+					
+					//移除 心跳；
+					HeartbeatTime.removeEventListener(TimerEvent.TIMER,onTime);
+					HeartbeatTime.stop();
+					HeartbeatTime = null;
+					
+					//开出结果；
+					var result_arr:Array = ((obj.lastResultIssus.drawResult).toString()).split(",");
+					for(var i:int = 0;i<10;i++)
+					{
+						for(var m:int = 0;m<10;m++)
+						{
+							if(i+1 == result_arr[m])
+							{
+								(car_group.getChildAt(i) as Car).result = m;
+							}
+						}
+						(car_group.getChildAt(i) as Car).end_mark = true;
+					}
+				}
+			}
+			
+			//保存最新数据；
+			private function saveData(obj:Object):void
+			{
+				//当前状态 
+				PublicDataClass.base_game_state = obj.resultState;
+				//上一期开奖结果；
+				PublicDataClass.base_resultArr = obj.lastResultIssus.drawResult.split(","); 
+				//上一期开奖信息；
+				PublicDataClass.base_lastResultInfo = obj.lastResultIssus;
+				//当前期开奖信息；
+				PublicDataClass.base_nowResultInfo = obj.nowResultIssus;
+				//历史开奖结果  1~10  对应的最近50期   期号数组
+				PublicDataClass.base_historyDataIusseArr = obj.issuses.split(",");
+				//历史开奖结果  1~10  对应的最近50期历史数据——折线图/表格
+				PublicDataClass.base_historyDataArr = obj.statisticsDatas; 
+				//保存下一期的期号
+				PublicDataClass.saveIssueNumber = obj.nowResultIssus.issueNumber;
+			}
+			
+			[Bindable]
+			[Embed(source="css/sound/pk10/qidong_1.mp3")]
+			private var qidong_1:Class;  
+			private var Speed_1:SoundAsset = new qidong_1() as SoundAsset;  
+			private var SpeedChannel_1:SoundChannel = new SoundChannel();
+			
+			[Bindable]
+			[Embed(source="css/sound/pk10/qiangshen.mp3")]
+			private var qiangshen:Class;  
+			private var Speed_2:SoundAsset = new qiangshen() as SoundAsset;  
+			private var SpeedChannel_2:SoundChannel = new SoundChannel();
+			
+			[Bindable]
+			[Embed(source="css/sound/pk10/speed_up.mp3")]
+			private var jiasu:Class;  
+			private var Speed_3:SoundAsset = new jiasu() as SoundAsset;  
+			private var SpeedChannel_3:SoundChannel;
+			
+			var pausePosition:int = 0; 
+			protected function openBtn_clickHandler(event:MouseEvent):void
+			{
+				if(openSoundBoolean)
+				{
+					openSoundBoolean = false;
+					
+					if(SpeedChannel_3 != null)
+					{
+						pausePosition = SpeedChannel_3.position;
+						SpeedChannel_3.stop();
+					}
+					return;
+				}else
+				{
+					openSoundBoolean = true;
+					
+					if(SpeedChannel_3 != null)
+					{
+						SpeedChannel_3 = Speed_3.play(pausePosition,9999);
+					}
+					
+					return;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		
+		<s:Parallel id="Countdown_3_effect" target="{Countdown_3}" effectEnd="Countdown_3_effect_effectEndHandler(event)">
+			<s:Fade duration="50" alphaFrom="0" alphaTo="1" />
+			<s:Scale autoCenterTransform="true" duration="1000" scaleXFrom="1" scaleXTo="0" scaleYFrom="1" scaleYTo="0" />
+			<s:Fade startDelay="1000" duration="50" alphaFrom="1" alphaTo="0" />
+		</s:Parallel>
+		<s:Parallel id="Countdown_2_effect" target="{Countdown_2}" effectEnd="Countdown_2_effect_effectEndHandler(event)">
+			<s:Fade duration="50" alphaFrom="0" alphaTo="1" />
+			<s:Scale autoCenterTransform="true" duration="1000" scaleXFrom="1" scaleXTo="0" scaleYFrom="1" scaleYTo="0" />
+			<s:Fade startDelay="1000" duration="50" alphaFrom="1" alphaTo="0" />
+		</s:Parallel>
+		<s:Parallel id="Countdown_1_effect" target="{Countdown_1}" effectEnd="Countdown_1_effect_effectEndHandler(event)">
+			<s:Fade duration="50" alphaFrom="0" alphaTo="1" />
+			<s:Scale autoCenterTransform="true" duration="1000" scaleXFrom="1" scaleXTo="0" scaleYFrom="1" scaleYTo="0" />
+			<s:Fade startDelay="1000" duration="50" alphaFrom="1" alphaTo="0" />
+		</s:Parallel>
+		
+	</fx:Declarations>
+	
+	<!--背景-->
+	<s:Image source="{moveCar_bg}" />
+	<!--ico-->
+	<pk10:HeadGroup id="headGroup" x="195" y="25"/>
+	
+	<!--上期  期号-->
+	<s:Group x="25" y="48">
+		<mx:Label styleName="dataAnalysis_label_time_iusse" 
+				  text="期号:"/>
+		<s:Label x="50" y="6" styleName="dataAnalysis_label_time_iusse"  id="changeIusse"
+				 text="{ PublicDataClass.base_lastResultInfo.issueNumber }"/>
+	</s:Group>
+	
+	<!--下期  期号  时间-->
+	<s:Group x="750" y="12" width="230" height="65" id="nextIusseTime_group">
+		<s:VGroup x="0" y="0" gap="15">
+			<mx:Label styleName="dataAnalysis_label_time_iusse_info" 
+					 text="开奖时间:"/>
+			<mx:Label styleName="dataAnalysis_label_time_iusse_info" 
+					 text="下期开奖:"/>
+		</s:VGroup>
+		<s:VGroup x="80" y="7" gap="25">
+			<s:Label styleName="dataAnalysis_label_time_iusse" 
+					 text="{   ((PublicDataClass.base_nowResultInfo.endTime).toString()).split(' ')[1].toString().split('.')[0]}"/>
+			<s:Label styleName="dataAnalysis_label_time_iusse" 
+					 text="{ PublicDataClass.base_nowResultInfo.issueNumber }"/>
+		</s:VGroup>
+	</s:Group>
+	
+	<mx:Label styleName="NowLottery_style"  id="NowLottery" x="750" y="30" visible="false"
+			  text="正在开奖……"/>
+	
+	<!--期号  时间      冠亚军和      1~5龙虎-->
+	<s:Group x="0" y="586" width="980" height="35">
+		<s:Label x="50" y="17" styleName="moveCar_time_issue"
+				 text="{ ((PublicDataClass.base_lastResultInfo.endTime).toString()).split(' ')[0] + '     ' +  PublicDataClass.base_lastResultInfo.issueNumber }"/>
+		<!-- 冠亚军和           大1，小0； 单1，双0；龙1，虎0； -->
+		<s:HGroup x="337" y="12" gap="28">
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					 text="{(((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[0].toString()).split(',')[0]}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					  text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[0].toString()).split(',')[1]) == 1?'大':'小'}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					  text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[0].toString()).split(',')[2]) == 1?'单':'双'}"/>
+		</s:HGroup>
+		<!-- 1~5龙虎        龙1，虎0； -->
+		<s:HGroup x="635" y="12" gap="10">
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					  text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[1].toString()).split('')[0]) == 1?'龙':'虎'}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					  text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[1].toString()).split('')[1]) == 1?'龙':'虎'}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					  text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[1].toString()).split('')[2]) == 1?'龙':'虎'}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					  text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[1].toString()).split('')[3]) == 1?'龙':'虎'}"/>
+			<mx:Label  styleName="moveCar_he_daxiao_danshuang" width="58"
+					  text="{int((((PublicDataClass.base_lastResultInfo.otherString).toString()).split('$')[1].toString()).split('')[4]) == 1?'龙':'虎'}"/>
+		</s:HGroup>
+	</s:Group>
+	
+	
+	
+	<!--aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-->
+	<s:Group y="94" id="group_2">
+		<!--车道-->
+		<s:HGroup x="-2632" y="58" id="bg_group" gap="0">
+			<s:Image source="{Lane_bg1}" />
+		</s:HGroup>
+		<!--起始线-->
+		<s:Image id="start_line" x="733" y="69" source="{start_line_bg}" alpha="0.7"/>
+		<!--汽车-->
+		<s:Group id="car_group" x="0" y="0" width="980" height="445" />
+	</s:Group>
+	<!--aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-->
+	
+	<!--返回统计-->
+	<s:Group id="goback_group" buttonMode="true" x="902" y="98" mouseOver="goback_mouseOverHandler(event)" mouseOut="goback_mouseOutHandler(event)"
+			 click="goback_clickHandler(event)">
+		<s:Image  source="{btn_bg}"/>
+		<mx:Label id="goback" x="3" y="0" color="#FFFFFF" fontFamily="微软雅黑" fontSize="12" fontStyle="normal" buttonMode="true" mouseChildren="false"
+				 text="返回统计>>"/>
+	</s:Group>
+	
+	
+	<s:Button id="start" x="6" y="7" label="start" click="star_clickHandler(event)" visible="false"/>
+	<s:Button id="stop" x="6" y="33" label="stop" click="stop_clickHandler(event)" visible="false"/>
+	
+	
+	<!--倒计时-->
+	<s:Group x="290" y="295" width="300" height="100" id="daojishi_group">
+		<s:Image source="{daojishi_bg}" />
+		<pk10:TimerComponentNew x="62" y="0" id="time_component" isVisible="false"/>
+	</s:Group>
+	
+	<!--开始倒计时-->
+	<s:Group x="350" y="230">
+		<s:Image id="Countdown_3"  source="{Countdown_3_ico}" alpha="0"/>
+		<s:Image id="Countdown_2"  source="{Countdown_2_ico}" alpha="0"/>
+		<s:Image id="Countdown_1" x="45" y="0" source="{Countdown_1_ico}" alpha="0"/>
+	</s:Group>
+	
+	<s:Group x="940" y="12" id="openBtn" click="openBtn_clickHandler(event)" buttonMode="true">
+		<s:Image source="{speak_close}" visible="{ openSoundBoolean?false:true}"/>
+		<s:Image source="{speak_open}" visible="{ openSoundBoolean?true:false}" />
+	</s:Group>
+	
+</s:Group>

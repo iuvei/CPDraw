@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="980" height="630"
+		  xmlns:cqssc="com.xamc.module.cqssc.*"
+		  creationComplete="group1_creationCompleteHandler(event)">
+	<!-- 加载样式 -->
+	<fx:Style source="css/css1.css"/>
+	<fx:Script>
+		<![CDATA[
+			import com.xamc.service.ServerTool;
+			import com.xamc.service.ServerToolImpl;
+			import com.xamc.single.CurrentBusinessInfo;
+			import com.xamc.single.PublicDataClass;
+			
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			[Embed(source="css/img/cqssc/cqssc_bg.jpg")]
+			private var bg:Class;
+			
+			[Bindable]
+			[Embed(source="css/img/cqssc/swf/snow.swf")]
+			private var snow:Class;
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				timerComponent.addEventListener("CountdownCompleteEvent",CountdownCompleteEventHandler);
+				timerComponent.addEventListener("DonotAllowTryEvent",DonotAllowTryEventHandler);
+				
+				// 请求数据
+				PublicDataClass.RequestData_And_SaveData(init,12);
+			}
+			private function init():void
+			{
+				//上期开奖结果  刷新；
+				headGroup.init( PublicDataClass.base_resultArr );
+				//当前期号
+				lastIusse.text = "第"+ PublicDataClass.base_lastResultInfo.issueNumber +"期";
+				//下期开奖期号
+				nextIusse.text = "下期：" + PublicDataClass.base_nowResultInfo.issueNumber;
+				//下期开奖时间
+				nextIussekaijiangTime.text = ((PublicDataClass.base_nowResultInfo.endTime).toString()).split(' ')[1].toString().split('.')[0];
+				//倒计时；
+				timerComponent.init(PublicDataClass.base_nowResultInfo.residualTime);
+				timerComponentNew.init(PublicDataClass.base_nowResultInfo.residualTime);
+				
+				if(PublicDataClass.base_game_state)//0未开奖，1正在开奖
+				{
+					//开始开奖；
+					start();
+				}else{
+					//滚动区域，播放一次上期开奖结果；雷同试试手气；
+					nextResultArr = new Array();
+					nextResultArr = PublicDataClass.base_resultArr.slice();
+					nextResultArr.unshift("");
+					//试试手气；初始化；
+					try_main();
+				}
+			}
+			
+			//倒计时 走完， 开奖；
+			private function CountdownCompleteEventHandler(e:Event):void
+			{
+				//开始开奖；
+				start();
+			}
+			private function DonotAllowTryEventHandler(e:Event):void
+			{
+				try_btn.mouseChildren = false;
+				try_btn.enabled = false;
+			}
+			
+			//模拟开奖结果数组；
+			private var nextResultArr:Array;
+			private var HeartbeatTime:Timer ;
+			private var timer:Timer;
+			private var n:int = 0;
+			
+			//开始开奖；
+			private function start():void
+			{
+				try_btn.mouseChildren = false;
+				try_btn.enabled = false;
+				
+				//重置滚号组件；启动 滚动；
+				reset_SlideGroup();
+				
+				//心跳   定时取开奖结果；
+				HeartbeatTime = new Timer(3000);
+				HeartbeatTime.addEventListener(TimerEvent.TIMER,onTime);
+				HeartbeatTime.start();
+			}
+			private function onTime(e:TimerEvent):void
+			{
+				var server:ServerTool = new ServerToolImpl();
+				var params:Object = new Object();
+				params.dateString = "";
+				params.type = 2;
+				params.lotteryId = CurrentBusinessInfo.nowLottery;
+				server.getSSCshipinData(params,resultHandler,faultHandler);
+			}
+			private function faultHandler(e:FaultEvent):void
+			{
+				trace("请求服务器异常！！！");
+			}
+			private function resultHandler(e:ResultEvent):void
+			{
+				trace(e.result.toString());
+				var obj:Object = JSON.parse(e.result.toString());
+				if(  int(PublicDataClass.saveIssueNumber) < int(obj.nowResultIssus.issueNumber) ) //说明此时开奖结果已出；
+				{
+					//保存最新数据；
+					saveData(obj);
+					
+					//移除 心跳；
+					HeartbeatTime.removeEventListener(TimerEvent.TIMER,onTime);
+					HeartbeatTime.stop();
+					HeartbeatTime = null;
+					
+					nextResultArr = new Array();
+					nextResultArr = PublicDataClass.base_resultArr.slice();
+					nextResultArr.unshift("");
+					//取到结果  开出号码；
+					stop();
+				}
+			}
+			//保存最新数据；
+			private function saveData(obj:Object):void
+			{
+				//当前状态 
+				PublicDataClass.base_game_state = obj.resultState;
+				//上一期开奖结果；
+				PublicDataClass.base_resultArr = obj.lastResultIssus.drawResult.split(","); 
+				//上一期开奖信息；
+				PublicDataClass.base_lastResultInfo = obj.lastResultIssus;
+				//当前期开奖信息；
+				PublicDataClass.base_nowResultInfo = obj.nowResultIssus;
+				//历史开奖结果  1~10  对应的最近50期   期号数组
+				PublicDataClass.base_historyDataIusseArr = obj.issuses.split(",");
+				//历史开奖结果  1~10  对应的最近50期历史数据——折线图/表格
+				PublicDataClass.base_historyDataArr = obj.statisticsDatas; 
+				//保存下一期的期号
+				PublicDataClass.saveIssueNumber = obj.nowResultIssus.issueNumber;
+			}
+			
+			//取到结果  开出号码；
+			private function stop():void
+			{
+				timer = new Timer(2000,7);
+				timer.addEventListener(TimerEvent.TIMER,timerHandler);
+				timer.addEventListener(TimerEvent.TIMER_COMPLETE,timerCompleteHandler);
+				timer.start();
+			}
+			
+			private function timerHandler(e:TimerEvent):void
+			{
+				n++;
+				if(n>5)
+				{
+					return;
+				}
+				this["location_" + n].isStop = true;
+				this["location_" + n].position = nextResultArr[n];
+			}
+			private function timerCompleteHandler(e:TimerEvent):void
+			{
+				n = 0;
+				timer.stop();
+				timer.removeEventListener(TimerEvent.TIMER,timerHandler);
+				timer.removeEventListener(TimerEvent.TIMER_COMPLETE,timerCompleteHandler);
+				timer = null;
+				
+				try_btn.mouseChildren = true;
+				try_btn.enabled = true;
+				
+				//确保取到最新的倒计时时间
+				var server:ServerTool = new ServerToolImpl();
+				var params:Object = new Object();
+				params.dateString = "";
+				params.type = 2;
+				params.lotteryId = CurrentBusinessInfo.nowLottery;
+				server.getSSCshipinData(params,resultHandler,faultHandler);
+				function faultHandler(e:FaultEvent):void
+				{
+					trace("请求服务器异常！！！");
+				}
+				function resultHandler(e:ResultEvent):void
+				{
+					trace(e.result.toString());
+					var obj:Object = JSON.parse(e.result.toString());
+					//保存最新数据；
+					saveData(obj);
+					
+					//刷新页面；
+					//上期开奖结果  刷新；
+					headGroup.init( PublicDataClass.base_resultArr );
+					//当前期号
+					lastIusse.text = "第"+ PublicDataClass.base_lastResultInfo.issueNumber +"期";
+					//下期开奖期号
+					nextIusse.text = "下期：" + PublicDataClass.base_nowResultInfo.issueNumber;
+					//下期开奖时间
+					nextIussekaijiangTime.text = ((PublicDataClass.base_nowResultInfo.endTime).toString()).split(' ')[1].toString().split('.')[0];
+					//倒计时；
+					timerComponent.init(PublicDataClass.base_nowResultInfo.residualTime);
+					timerComponentNew.init(PublicDataClass.base_nowResultInfo.residualTime);
+				}
+			}
+			
+			//重置滚号组件；
+			private function reset_SlideGroup():void
+			{
+				for(var i:int = 1;i<6;i++)
+				{
+					(this["location_" + i] as SlideGroup).init();
+				}
+			}
+			
+			//试试手气；
+			protected function trybtn1_clickHandler(event:MouseEvent):void
+			{
+				//随机一组数据；
+				nextResultArr = new Array();
+				for(var i:int=0; i<5; i++)
+				{
+					nextResultArr.push((Math.floor(Math.random() * 9) + 1));
+				}
+				nextResultArr.unshift("");
+				
+				//试试手气；初始化；
+				try_main();
+			}
+			
+			//试试手气；初始化；
+			private function try_main():void
+			{
+				try_btn.mouseChildren = false;
+				try_btn.enabled = false;
+				
+				//重置滚号组件；启动 滚动；
+				reset_SlideGroup();
+				
+				timer = new Timer(2000,7);
+				timer.addEventListener(TimerEvent.TIMER,try_timerHandler);
+				timer.addEventListener(TimerEvent.TIMER_COMPLETE,try_timerCompleteHandler);
+				timer.start();
+			}
+			
+			private function try_timerHandler(e:TimerEvent):void
+			{
+				n++;
+				if(n>5)
+				{
+					return;
+				}
+				this["location_" + n].isStop = true;
+				this["location_" + n].position = nextResultArr[n];
+			}
+			private function try_timerCompleteHandler(e:TimerEvent):void
+			{
+				n = 0;
+				timer.stop();
+				timer.removeEventListener(TimerEvent.TIMER,timerHandler);
+				timer.removeEventListener(TimerEvent.TIMER_COMPLETE,timerCompleteHandler);
+				timer = null;
+				
+				try_btn.mouseChildren = true;
+				try_btn.enabled = true;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<!--背景-->
+	<s:Image source="{bg}" />
+	<!--彩种名称-->
+	<mx:Label x="245" y="95" width="110" styleName="name_style" text="重庆时时彩"/>
+	<!--当前期号-->
+	<mx:Label x="409" y="98" width="140" styleName="iusse_style" text="第20161214012期" id="lastIusse"/>
+	<!--倒计时-->
+	<!--<mx:Label x="716" y="96" styleName="timeComponentNew_style" text="12345"/>-->
+	<cqssc:TimerComponentNew  x="666" y="97" id="timerComponentNew"/>
+	
+	<!--下期开奖时间-->
+	<mx:Label x="835" y="179" width="87" rotationZ="7" rotationX="15"  styleName="iusse_style" text="16:20:45" id="nextIussekaijiangTime"/>
+	<!--下期开奖期号-->
+	<mx:Label x="828" y="288" width="140" rotationZ="-4" rotationX="15" styleName="iusse_style" text="下期：20161214013" id="nextIusse"/>
+	
+	<!--上期开奖结果-->
+	<cqssc:HeadGroup x="289" y="11" id="headGroup"/>
+	
+	<!--  左侧倒计时  -->
+	<cqssc:TimerComponent x="21" y="174" id="timerComponent"/>
+	
+	<!--  滚号区域  -->
+	<s:Group x="160" y="150" width="640" height="325" clipAndEnableScrolling="true">
+		<s:HGroup x="0" y="13" width="640" height="300">
+			<cqssc:SlideGroup id="location_1"/>
+			<cqssc:SlideGroup id="location_2"/>
+			<cqssc:SlideGroup id="location_3"/>
+			<cqssc:SlideGroup id="location_4"/>
+			<cqssc:SlideGroup id="location_5"/>
+		</s:HGroup>
+	</s:Group>
+	<!--试一试-->
+	<cqssc:TryBtn id="try_btn" x="270" y="548" buttonMode="true" click="trybtn1_clickHandler(event)"/>
+	
+	<s:SWFLoader source="{snow}" />
+	
+</s:Group>

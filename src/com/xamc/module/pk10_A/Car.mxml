@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="group1_creationCompleteHandler(event)" 
+		 contentBackgroundColor="0x000000"
+		 xmlns:local="*">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			
+			//			private var _ax:Number = 0.5;//加速度
+			//			private var _vx:Number = 0;//速度
+			//			
+			//			private var _v1:Number = 25;//最大速度（0~v1）设为定值
+			//			private var _v2:Number = -15;//随机速度（v2）
+			//			private var _v3:Number = -25;//最小速度（0~v3）
+			//			private var _sameSpeed_num:int = 5;//匀速的时间次数；
+			
+			
+			private var _ax:Number;//加速度
+			private var _vx:Number;//速度
+			
+			private var _v1:Number;//最大速度（0~v1）设为定值
+			private var _v2:Number;//随机速度（v2）
+			private var _v3:Number;//最小速度（0~v3）
+			private var _sameSpeed_num_jia:int;//匀速的时间次数；
+			private var _sameSpeed_num_jian:int;//匀速的时间次数；
+			
+			private var timer_sameSpeed:Timer;//计时器；
+			
+			private var _mark:String;//编号；
+			private var _end_mark:Boolean = false;//结束的标志；
+			
+			public var getDataArr:Array = new Array();
+			
+			public var n:int = 0;//循环次数；
+			
+			public var result:int;//开奖结果；
+			
+			private var _end_ax:Number;//结束的加速度；
+			private var _end_vx:Number;//结束的速度；
+			private var _end_v1:Number;//结束的最大速度；
+			
+			
+			
+			[Bindable]
+			public function get end_v1():Number
+			{
+				return _end_v1;
+			}
+			
+			public function set end_v1(value:Number):void
+			{
+				_end_v1 = value;
+			}
+			
+			[Bindable]
+			public function get end_vx():Number
+			{
+				return _end_vx;
+			}
+			
+			public function set end_vx(value:Number):void
+			{
+				_end_vx = value;
+			}
+			
+			[Bindable]
+			public function get end_ax():Number
+			{
+				return _end_ax;
+			}
+			
+			public function set end_ax(value:Number):void
+			{
+				_end_ax = value;
+			}
+			
+			[Bindable]
+			public function get end_mark():Boolean
+			{
+				return _end_mark;
+			}
+			
+			public function set end_mark(value:Boolean):void
+			{
+				_end_mark = value;
+			}
+			
+			[Bindable]
+			public function get mark():String
+			{
+				return _mark;
+			}
+			
+			public function set mark(value:String):void
+			{
+				_mark = value;
+				
+				set_source(int(_mark))
+			}
+			
+			[Bindable]
+			public function get sameSpeed_num_jian():int
+			{
+				return _sameSpeed_num_jian;
+			}
+			
+			public function set sameSpeed_num_jian(value:int):void
+			{
+				_sameSpeed_num_jian = value;
+			}
+			
+			[Bindable]
+			public function get sameSpeed_num_jia():int
+			{
+				return _sameSpeed_num_jia;
+			}
+			
+			public function set sameSpeed_num_jia(value:int):void
+			{
+				_sameSpeed_num_jia = value;
+			}
+			
+			[Bindable]
+			public function get v3():Number
+			{
+				return _v3;
+			}
+			
+			public function set v3(value:Number):void
+			{
+				_v3 = value;
+			}
+			
+			[Bindable]
+			public function get v2():Number
+			{
+				return _v2;
+			}
+			
+			public function set v2(value:Number):void
+			{
+				_v2 = value;
+			}
+			
+			[Bindable]
+			public function get v1():Number
+			{
+				return _v1;
+			}
+			
+			public function set v1(value:Number):void
+			{
+				_v1 = value;
+			}
+			
+			[Bindable]
+			public function get vx():Number
+			{
+				return _vx;
+			}
+			
+			public function set vx(value:Number):void
+			{
+				_vx = value;
+			}
+			
+			[Bindable]
+			public function get ax():Number
+			{
+				return _ax;
+			}
+			
+			public function set ax(value:Number):void
+			{
+				_ax = value;
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				//carMove();
+			}
+			
+			private var timer_1:Timer = new Timer(15);
+			
+			public function carMove():void
+			{
+				timer_1.addEventListener(TimerEvent.TIMER,timer_1_EventHandler);
+				timer_1.start();
+			}
+			//加速
+			private function timer_1_EventHandler(e:TimerEvent):void
+			{
+				if(vx < v1 )
+				{
+					vx += ax;
+					car_1.x -= vx;
+					flame.visible = true;
+					shadow.visible = true;
+				}
+				else{
+					
+					timer_1.removeEventListener(TimerEvent.TIMER,timer_1_EventHandler);
+					timer_1.stop();
+					car_enterframeHandler();
+					vx = 0;
+				}
+			}
+			//匀速
+			private function car_enterframeHandler():void
+			{
+				
+				timer_sameSpeed = new Timer(1000,sameSpeed_num_jia);
+				timer_sameSpeed.addEventListener(TimerEvent.TIMER_COMPLETE,timer_sameSpeed_jiaCompleteHandler);
+				timer_sameSpeed.start();
+				flame.visible = false;
+			}
+			private function timer_sameSpeed_jiaCompleteHandler(event:TimerEvent):void
+			{
+				timer_sameSpeed.stop();
+				timer_sameSpeed.removeEventListener(TimerEvent.TIMER_COMPLETE,timer_sameSpeed_jiaCompleteHandler);
+				timer_sameSpeed = null;
+				shadow.visible = false;
+				
+				timer_1.addEventListener(TimerEvent.TIMER,timer_2_EventHandler);
+				timer_1.start();
+			}
+			//减速
+			private function timer_2_EventHandler(e:TimerEvent):void
+			{
+				if(vx > v2)
+				{
+					vx -= ax;
+					car_1.x -= vx;
+				}
+				else{
+					timer_1.removeEventListener(TimerEvent.TIMER,timer_2_EventHandler);
+					timer_1.stop();
+					car_3_enterframeHandler();
+				}	
+			}
+			//匀速
+			private function car_3_enterframeHandler():void
+			{
+				
+				timer_sameSpeed = new Timer(1000,sameSpeed_num_jian);
+				timer_sameSpeed.addEventListener(TimerEvent.TIMER_COMPLETE,timer_sameSpeed_jianCompleteHandler);
+				timer_sameSpeed.start();
+			}
+			private function timer_sameSpeed_jianCompleteHandler(event:TimerEvent):void
+			{
+				timer_sameSpeed.stop();
+				timer_sameSpeed.removeEventListener(TimerEvent.TIMER_COMPLETE,timer_sameSpeed_jianCompleteHandler);
+				timer_sameSpeed = null;
+				
+				timer_1.addEventListener(TimerEvent.TIMER,timer_3_EventHandler);
+				timer_1.start();
+				
+			}
+			private function timer_3_EventHandler(e:TimerEvent):void
+			{
+				if(vx > v3 )
+				{
+					vx -= ax;
+					car_1.x -= vx;
+				}
+				else{
+					
+					if(end_mark && n == 0)
+					{
+						//结束；
+						timer_1.removeEventListener(TimerEvent.TIMER,timer_3_EventHandler);
+						vx = 0;
+						end();
+						timer_1.addEventListener(TimerEvent.TIMER,timer_4_EventHandler);
+					}else{
+						timer_1.removeEventListener(TimerEvent.TIMER,timer_3_EventHandler);
+						timer_1.addEventListener(TimerEvent.TIMER,timer_1_EventHandler);
+						vx = 0;
+						
+						car_1.x = 0;
+						
+						//重新给数据
+						n++;
+						if(n>8){
+							n = 0;
+						}else
+						{
+							n++;
+						}
+						//mark = (i+1).toString();
+						ax = getDataArr[n].ax;
+						vx = getDataArr[n].vx;
+						v1 = getDataArr[n].v1;
+						v2 = getDataArr[n].v2;
+						v3 = getDataArr[n].v3;
+						sameSpeed_num_jia = getDataArr[n].sameSpeed_num_jia;
+						sameSpeed_num_jian = getDataArr[n].sameSpeed_num_jian;
+					}
+				}
+			}
+			
+			
+			private var plan_arr:Array =[
+				{sort_num:"10",end_ax:0.3,end_vx:0,end_v1:21},
+				{sort_num:"9",end_ax:0.3,end_vx:0,end_v1:20},
+				{sort_num:"8",end_ax:0.3,end_vx:0,end_v1:19},
+				{sort_num:"7",end_ax:0.3,end_vx:0,end_v1:18},
+				{sort_num:"6",end_ax:0.3,end_vx:0,end_v1:17},
+				{sort_num:"5",end_ax:0.3,end_vx:0,end_v1:16},
+				{sort_num:"4",end_ax:0.3,end_vx:0,end_v1:14},
+				{sort_num:"3",end_ax:0.3,end_vx:0,end_v1:12},
+				{sort_num:"2",end_ax:0.3,end_vx:0,end_v1:10},
+				{sort_num:"1",end_ax:0.3,end_vx:0,end_v1:8},
+			];
+			
+			public function end():void
+			{
+				ax = 0;
+				vx = 0;
+				v1 = 0;
+				v2 = 0;
+				v3 = 0;
+				sameSpeed_num_jia = 0;
+				sameSpeed_num_jian = 0;
+				
+				end_ax = plan_arr[result].end_ax;
+				end_vx = plan_arr[result].end_vx;
+				end_v1 = plan_arr[result].end_v1;
+			}
+			
+			//结束
+			private function timer_4_EventHandler(e:TimerEvent):void
+			{
+				if(end_vx < end_v1 )
+				{
+					end_vx += end_ax;
+					car_1.x -= end_vx;
+					flame.visible = true;
+					shadow.visible = true;
+				}
+				else{
+					dispatchEvent(new Event("MoveEndEvent",true));
+					timer_1.removeEventListener(TimerEvent.TIMER,timer_4_EventHandler);
+					timer_1.stop();
+				}
+			}
+			
+			//结束——过线
+			public function end_Overline_Handler():void
+			{
+				timer_1.addEventListener(TimerEvent.TIMER,timer_5_EventHandler);
+				timer_1.start();
+			}
+			private function timer_5_EventHandler(e:TimerEvent):void
+			{
+				if(end_vx < end_v1 )
+				{
+					end_vx += end_ax;
+					car_1.x -= end_vx;
+				}
+				else{
+					dispatchEvent(new Event("AllMoveEndEvent",true));
+					
+					timer_1.removeEventListener(TimerEvent.TIMER,timer_5_EventHandler);
+					timer_1.stop();
+					timer_1 = null;
+					
+					rotate_1.stop();
+					rotate_1.target = null;
+					rotate_2.stop();
+					rotate_2.target = null;
+					car_1.removeElement(flame);
+					flame = null;
+					car_1.removeElement(shadow);
+					shadow = null;
+				}
+			}
+			
+			public function rotate_start():void
+			{
+				rotate_1.target = wheel_1;
+				rotate_1.play();
+				rotate_2.target = wheel_2;
+				rotate_2.play();
+			}
+			protected function rotate_1_effectEndHandler(event:EffectEvent):void
+			{
+				rotate_1.target = wheel_1;
+				rotate_1.play();
+			}
+			protected function rotate_2_effectEndHandler(event:EffectEvent):void
+			{
+				rotate_2.target = wheel_2;
+				rotate_2.play();
+			}
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/car_1.png")]
+			private var carNum_1:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/car_2.png")]
+			private var carNum_2:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/car_3.png")]
+			private var carNum_3:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/car_4.png")]
+			private var carNum_4:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/car_5.png")]
+			private var carNum_5:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/car_6.png")]
+			private var carNum_6:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/car_7.png")]
+			private var carNum_7:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/car_8.png")]
+			private var carNum_8:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/car_9.png")]
+			private var carNum_9:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/car_10.png")]
+			private var carNum_10:Class; 
+			
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/wheel_1.png")]
+			private var wheel_11:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/wheel_2.png")]
+			private var wheel_22:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/wheel_3.png")]
+			private var wheel_33:Class; 
+			
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/1.png")]
+			private var num_1:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/2.png")]
+			private var num_2:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/3.png")]
+			private var num_3:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/4.png")]
+			private var num_4:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/5.png")]
+			private var num_5:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/6.png")]
+			private var num_6:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/7.png")]
+			private var num_7:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/8.png")]
+			private var num_8:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/9.png")]
+			private var num_9:Class; 
+			[Bindable]
+			[Embed(source="css/img/pk10_A/car/10.png")]
+			private var num_10:Class; 
+			
+			
+			
+			private function set_source(num:int):void
+			{
+				//车资源；
+				car_pic.source = this["carNum_" + num];
+				//车号资源；
+				number.source = this["num_" + num];
+				
+				//车轮资源；
+				if(num == 1)
+				{
+					wheel_1.source = wheel_33;
+					wheel_1.x = 13;
+					wheel_1.y = 10;
+					wheel_2.source = wheel_33;
+					wheel_2.x = 70;
+					wheel_2.y = 9;
+					number.x = 52;
+					number.y = 1;
+					flame.x = 89;
+					flame.y = 16;
+				}
+				if(num == 2)
+				{
+					wheel_1.source = wheel_33;
+					wheel_1.x = 14;
+					wheel_1.y = 11;
+					wheel_2.source = wheel_33;
+					wheel_2.x = 72;
+					wheel_2.y = 10;
+					number.x = 50;
+					number.y = 1;
+					flame.x = 92;
+					flame.y = 16;
+				}
+				if(num == 3)
+				{
+					wheel_1.source = wheel_33;
+					wheel_1.x = 15;
+					wheel_1.y = 12;
+					wheel_2.source = wheel_33;
+					wheel_2.x = 74;
+					wheel_2.y = 11;
+					number.x = 50;
+					number.y = 1;
+					flame.x = 96;
+					flame.y = 16;
+				}
+				if(num == 4)
+				{
+					wheel_1.source = wheel_22;
+					wheel_1.x = 14;
+					wheel_1.y = 11;
+					wheel_2.source = wheel_22;
+					wheel_2.x = 75;
+					wheel_2.y = 10;
+					number.x = 52;
+					number.y = 1;
+					flame.x = 98;
+					flame.y = 16;
+				}
+				if(num == 5)
+				{
+					wheel_1.source = wheel_22;
+					wheel_1.x = 15;
+					wheel_1.y = 11;
+					wheel_2.source = wheel_22;
+					wheel_2.x = 77;
+					wheel_2.y = 11;
+					number.x = 55;
+					number.y = 2;
+					flame.x = 101;
+					flame.y = 17;
+				}
+				if(num == 6)
+				{
+					wheel_1.source = wheel_22;
+					wheel_1.x = 15;
+					wheel_1.y = 11;
+					wheel_2.source = wheel_22;
+					wheel_2.x = 79;
+					wheel_2.y = 11;
+					number.x = 55;
+					number.y = 2;
+					flame.x = 103;
+					flame.y = 17;
+				}
+				if(num == 7)
+				{
+					wheel_1.source = wheel_11;
+					wheel_1.x = 15;
+					wheel_1.y = 10;
+					wheel_2.source = wheel_11;
+					wheel_2.x = 80;
+					wheel_2.y = 9;
+					number.x = 63;
+					number.y = 1;
+					flame.x = 108;
+					flame.y = 18;
+				}
+				if(num == 8)
+				{
+					wheel_1.source = wheel_11;
+					wheel_1.x = 14;
+					wheel_1.y = 11;
+					wheel_2.source = wheel_11;
+					wheel_2.x = 82;
+					wheel_2.y = 10;
+					number.x = 60;
+					number.y = 2;
+					flame.x = 109;
+					flame.y = 18;
+				}
+				if(num == 9)
+				{
+					wheel_1.source = wheel_11;
+					wheel_1.x = 15;
+					wheel_1.y = 11;
+					wheel_2.source = wheel_11;
+					wheel_2.x = 84;
+					wheel_2.y = 10;
+					number.x = 59;
+					number.y = 2;
+					flame.x = 112;
+					flame.y = 18;
+				}
+				if(num == 10)
+				{
+					wheel_1.source = wheel_11;
+					wheel_1.x = 16;
+					wheel_1.y = 11;
+					wheel_2.source = wheel_11;
+					wheel_2.x = 87;
+					wheel_2.y = 11;
+					number.x = 52;
+					number.y = 3;
+					flame.x = 117;
+					flame.y = 19;
+				}
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		
+		<s:Rotate id="rotate_1" autoCenterTransform="true" angleFrom="0" angleTo="360" duration="100"
+				  effectEnd="rotate_1_effectEndHandler(event)"/>
+		<s:Rotate id="rotate_2" autoCenterTransform="true" angleFrom="0" angleTo="360" duration="100"
+				  effectEnd="rotate_2_effectEndHandler(event)"/>
+		
+	</fx:Declarations>
+	<s:Group id="car_1" x="0" width="100%" height="100%">
+		<s:Image id="car_pic" source="css/img/pk10_A/car/car_5.png"/>
+		<s:Image id="wheel_1" x="15" y="11" source="css/img/pk10_A/car/wheel_2.png"/>
+		<s:Image id="wheel_2" x="77" y="11" source="css/img/pk10_A/car/wheel_2.png"/>
+		<s:Image id="number" x="55" y="2" source="css/img/pk10_A/car/5.png"/>
+		<s:SWFLoader id="flame" x="101" y="17" source="@Embed('css/img/pk10_A/swf/flame.swf')" visible="false"/>
+		<s:SWFLoader id="shadow" x="0" y="13" source="@Embed('css/img/pk10_A/swf/shadow.swf')" visible="false"/>
+	</s:Group>
+	
+	<!--<s:Group id="car_1" visible="false">
+	<local:car id="car_ex"/>
+	</s:Group>-->
+</s:Group>
